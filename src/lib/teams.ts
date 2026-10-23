@@ -1,4 +1,5 @@
 import { FLAG, INK } from "./colors";
+import { SETTINGS } from "./settings";
 
 export type TeamId = "blue" | "white" | "red" | "green" | "yellow" | "orange";
 export type TeamCount = 4 | 5 | 6;
@@ -78,7 +79,7 @@ export const TEAMS: Record<TeamId, Team> = {
   },
   orange: {
     id: "orange",
-    name: "[TEAM 6 NAME]",
+    name: SETTINGS.team6Name,
     color: FLAG.orange,
     solid: FLAG.orangeDark,
     onSolid: "#FFFFFF",

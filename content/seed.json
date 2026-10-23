@@ -22,6 +22,7 @@
       "prompt": "Before Election Day, what should you check first?",
       "options": null,
       "correct_index": null,
+      "reveal_title": null,
       "trail_fact": null,
       "timer_seconds": 20,
       "_todo": "Answer choices still being written."
@@ -34,6 +35,7 @@
       "prompt": "Dashain, Nepal's biggest festival, lasts how many days?",
       "options": ["3 days", "7 days", "15 days", "30 days"],
       "correct_index": 2,
+      "reveal_title": "Dashain lasts 15 days",
       "trail_fact": "Families gather for Dashain, and elders give tika and blessings. It celebrates good winning over evil.",
       "timer_seconds": 20
     }
