@@ -1,0 +1,49 @@
+{
+  "_note": "Sample content from the design-reference mockups. Final questions are still being written. Never put real election dates here; keep the [PLACEHOLDERS] for the host to fill in.",
+  "placeholders": {
+    "CLUB NAME": "[CLUB NAME]",
+    "GAME URL": "[GAME URL]",
+    "PRIZE": "[PRIZE]",
+    "NC REGISTRATION DEADLINE": "[NC REGISTRATION DEADLINE]",
+    "ELECTION DATE": "[ELECTION DATE]",
+    "CLUB INSTAGRAM": "[CLUB INSTAGRAM]",
+    "TEAM 6 NAME": "[TEAM 6 NAME]"
+  },
+  "game": {
+    "title": "Dashain & Democracy Night",
+    "default_mode": "buttons"
+  },
+  "questions": [
+    {
+      "checkpoint": 1,
+      "order": 1,
+      "type": "multiple_choice",
+      "topic": "voting",
+      "prompt": "Before Election Day, what should you check first?",
+      "options": null,
+      "correct_index": null,
+      "trail_fact": null,
+      "timer_seconds": 20,
+      "_todo": "Answer choices still being written."
+    },
+    {
+      "checkpoint": 2,
+      "order": 1,
+      "type": "multiple_choice",
+      "topic": "nepal",
+      "prompt": "Dashain, Nepal's biggest festival, lasts how many days?",
+      "options": ["3 days", "7 days", "15 days", "30 days"],
+      "correct_index": 2,
+      "trail_fact": "Families gather for Dashain, and elders give tika and blessings. It celebrates good winning over evil.",
+      "timer_seconds": 20
+    }
+  ],
+  "storm_cards": [
+    {
+      "title": "Your planned trail is closed.",
+      "body": "A rockslide blocked the route to the next camp, and the sun sets in four hours. What does your team do now?",
+      "helpful_supply": null,
+      "_todo": "Choose which supply (if any) earns a bonus on this card."
+    }
+  ]
+}

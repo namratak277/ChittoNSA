@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* Chhito! design tokens. Hex values used inside SVGs live in src/lib/colors.ts — keep the two in sync. */
+@theme {
+  --font-sans: var(--font-baloo), system-ui, sans-serif;
+  --font-display: var(--font-yatra), var(--font-baloo), cursive;
+
+  /* Prayer flags / teams */
+  --color-flag-blue: #1d4ed8;
+  --color-flag-white: #ffffff;
+  --color-flag-red: #dc2626;
+  --color-flag-green: #16a34a;
+  --color-flag-green-dark: #15803d; /* behind white text */
+  --color-flag-yellow: #f2b705; /* always dark text on yellow */
+  --color-flag-orange: #ea580c;
+  --color-flag-orange-dark: #c2410c; /* behind white text */
+
+  /* Brand */
+  --color-marigold: #f2b705;
+  --color-chili: #e23d28;
+  --color-pine: #0e7c5a;
+  --color-cream: #fff6dc;
+
+  /* Neutrals */
+  --color-ink: #1e1b2e;
+  --color-body: #4a4660;
+  --color-page: #fffdf8;
+  --color-maker: #f6f4ee;
+  --color-rule: #d9cfb4; /* dashed dividers */
+  --color-quiet: #a9a5b8; /* unselected borders */
+
+  /* Feedback */
+  --color-success-bg: #dcf5e3;
+  --color-danger-bg: #fde2e2;
+  --color-danger: #b91c1c;
+  --color-sun: #fff1c2;
+
+  /* Mountain (light glacier) */
+  --color-glacier-lit: #a9c8f7;
+  --color-glacier-shadow: #7fa6ec;
+  --color-glacier-fold: #6f9be8;
+  --color-glacier-foothill: #8fb2ef;
+  --color-glacier-haze: #e3edfc;
+  --color-night: #2a3f7a;
+  --color-topi-bg: #eaf0fd;
+
+  --radius-card: 20px;
+  --shadow-ink: 8px 8px 0 var(--color-ink);
+  --shadow-ink-sm: 4px 4px 0 var(--color-ink);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-flag-blue);
+  outline-offset: 3px;
+}
