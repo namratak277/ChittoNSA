@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Storm Zone event host screen</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E1B2E}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; box-sizing: border-box; background: #DDE3EE; color: #1E1B2E; font-family: 'Baloo 2', system-ui, sans-serif; position: relative; overflow: hidden">
+  <svg width="1280" height="720" viewBox="0 0 1280 720" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+    <path d="M0 720 L0 560 L160 440 L300 520 L460 380 L620 520 L760 450 L760 720 Z" fill="#B9C6DE"></path>
+    <path d="M460 380 L620 520 L760 450 L760 720 L520 720 L500 520 Z" fill="#9FB0D2"></path>
+    <g fill="#8A93A8"><ellipse cx="200" cy="120" rx="150" ry="44"></ellipse><ellipse cx="320" cy="96" rx="110" ry="50"></ellipse><ellipse cx="560" cy="130" rx="140" ry="42"></ellipse></g>
+    <path d="M300 150 L272 206 L298 206 L276 262" fill="none" stroke="#F2B705" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"></path>
+    <g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.7"><path d="M120 300 L104 330"></path><path d="M220 340 L204 370"></path><path d="M380 300 L364 330"></path><path d="M560 330 L544 360"></path><path d="M660 290 L644 320"></path><path d="M60 420 L44 450"></path></g>
+  </svg>
+
+  <div style="position: absolute; left: 56px; top: 36px; display: flex; flex-direction: column; gap: 4px">
+    <div style="font-size: 17px; font-weight: 800; letter-spacing: 1px; color: #B91C1C">CHECKPOINT 3 · THE STORM ZONE</div>
+    <h1 style="margin: 0; font-size: 50px; line-height: 1; font-weight: 800">Surprise event!</h1>
+  </div>
+
+  <div style="position: absolute; left: 56px; top: 150px; width: 640px; background: #FFFDF8; border: 4px solid #1E1B2E; border-radius: 22px; padding: 22px 26px; box-sizing: border-box; box-shadow: 8px 8px 0 #1E1B2E; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L22 20 H2 Z" fill="#F2B705" stroke="#1E1B2E" stroke-width="1.8" stroke-linejoin="round"></path><path d="M12 9 V14" stroke="#1E1B2E" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="17" r="1.3" fill="#1E1B2E"></circle></svg>
+      <span style="font-size: 16px; font-weight: 800; letter-spacing: 1px">EVENT CARD 1 OF 3</span>
+    </div>
+    <div style="font-size: 34px; font-weight: 800; line-height: 1.1">Your planned trail is closed.</div>
+    <div style="font-size: 20px; line-height: 1.4; color: #3A3550">A rockslide blocked the route to the next camp, and the sun sets in four hours. What does your team do now?</div>
+    <div style="font-size: 16px; color: #4A4660">Two minutes to talk. Then one person explains your plan. Did any of your supplies help?</div>
+  </div>
+
+  <div style="position: absolute; left: 56px; top: 476px; width: 640px; background: #1E1B2E; color: #FFF6DC; border-radius: 18px; padding: 14px 20px; box-sizing: border-box">
+    <div style="font-size: 14px; font-weight: 800; letter-spacing: 1px; color: #F2B705">AFTER THE ANSWERS · THE VOTING LINK</div>
+    <div style="font-size: 18px; line-height: 1.4">If your voting plan falls through, like a moved polling place or a missed day, check official sources for the options open to you, such as early voting, voting by mail or a different location.</div>
+  </div>
+
+  <div style="position: absolute; right: 40px; top: 36px; width: 486px; display: flex; flex-direction: column; gap: 12px">
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 14px 18px; display: flex; align-items: center; gap: 16px">
+      <div style="width: 80px; height: 80px; border-radius: 50%; border: 8px solid #B91C1C; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800">1:37</div>
+      <div style="font-size: 17px; line-height: 1.35"><b>Teams are planning</b><br>Practical, informed plans score best, not the fastest answer.</div>
+    </div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 19px; font-weight: 800">Host scorecard</span><span style="font-size: 13px; color: #4A4660">tap to award</span></div>
+      <sc-for list="{{ teams }}" as="t" hint-placeholder-count="5">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span style="{{ t.dot }}"></span>
+          <span style="flex-grow: 1; min-width: 0; font-size: 14px; font-weight: 700; line-height: 1.1">{{ t.name }}</span>
+          <button type="button" onClick="{{ t.plan }}" aria-label="{{ t.planLabel }}" style="min-height: 34px; padding: 0 6px; border-radius: 8px; border: 2px solid #1E1B2E; background: #FFF6DC; font-size: 12px; font-weight: 800">+10 plan</button>
+          <button type="button" onClick="{{ t.backup }}" aria-label="{{ t.backupLabel }}" style="min-height: 34px; padding: 0 6px; border-radius: 8px; border: 2px solid #1E1B2E; background: #FFF6DC; font-size: 12px; font-weight: 800">+5 backup</button>
+          <button type="button" onClick="{{ t.team }}" aria-label="{{ t.teamLabel }}" style="min-height: 34px; padding: 0 6px; border-radius: 8px; border: 2px solid #1E1B2E; background: #FFF6DC; font-size: 12px; font-weight: 800">+5 team</button>
+          <b style="width: 34px; text-align: right; font-size: 17px">{{ t.pts }}</b>
+        </div>
+      </sc-for>
+      <button type="button" onClick="{{ reset }}" style="align-self: flex-start; min-height: 32px; padding: 0 10px; border-radius: 8px; border: 0; background: transparent; font-size: 13px; text-decoration: underline">Reset this round</button>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <a href="Mountain.dc.html" style="min-height: 52px; border-radius: 14px; background: #1E1B2E; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; text-decoration: none">Next: Final Ascent</a>
+      <a href="Host-Summit.dc.html" style="min-height: 52px; border-radius: 14px; border: 2px solid #1E1B2E; background: #fff; color: #1E1B2E; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; text-decoration: none">Final results (demo)</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { pts: [0, 0, 0, 0, 0] }; }
+  renderVals() {
+    const teams = [
+      { name: 'Summit Seekers', c: '#1D4ED8' },
+      { name: 'Himalayan Heroes', c: '#DC2626' },
+      { name: 'Team Sagarmatha', c: '#16A34A' },
+      { name: 'Momo Mountaineers', c: '#F2B705' },
+      { name: 'Snow Leopards', c: '#FFFFFF' }
+    ];
+    const pts = this.state.pts;
+    const add = (i, n) => () => { const next = pts.slice(); next[i] += n; this.setState({ pts: next }); };
+    return {
+      reset: () => this.setState({ pts: [0, 0, 0, 0, 0] }),
+      teams: teams.map((t, i) => ({
+        name: t.name,
+        pts: '+' + pts[i],
+        dot: 'width: 14px; height: 14px; border-radius: 4px; border: 2px solid #1E1B2E; flex-shrink: 0; background: ' + t.c,
+        plan: add(i, 10), backup: add(i, 5), team: add(i, 5),
+        planLabel: 'Award ' + t.name + ' 10 points for a practical plan',
+        backupLabel: 'Award ' + t.name + ' 5 points for a backup plan',
+        teamLabel: 'Award ' + t.name + ' 5 points for teamwork'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

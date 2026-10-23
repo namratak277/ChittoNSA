@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Modes and roles</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E1B2E}
+</style>
+</helmet>
+<div style="width: 1780px; height: 680px; box-sizing: border-box; padding: 48px 64px; background: #FFFDF8; color: #1E1B2E; font-family: 'Baloo 2', system-ui, sans-serif; display: flex; flex-direction: column; gap: 24px">
+  <div style="display: flex; align-items: baseline; gap: 20px">
+    <h1 style="margin: 0; font-size: 40px; line-height: 1.1; font-weight: 800">Two ways to answer · two kinds of people</h1>
+    <div style="font-size: 18px; color: #4A4660">The host picks the mode in Host setup before Base Camp opens.</div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 22px 26px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="padding: 2px 14px; border-radius: 999px; background: #1D4ED8; color: #fff; font-size: 16px; font-weight: 800">MODE 1</span>
+        <span style="font-size: 30px; font-weight: 800">Buttons mode</span>
+      </div>
+      <div style="font-size: 18px; line-height: 1.45"><b>Everyone answers every question.</b> Tap the trail sign that matches the flag before the 20-second timer ends.</div>
+      <div style="font-size: 18px; line-height: 1.45"><b>Scoring:</b> a right answer earns 10 points for the team. Faster teams earn a small speed bonus, and every team keeps climbing.</div>
+      <div style="font-size: 18px; line-height: 1.45; color: #4A4660">Best for: big groups and warm-ups. Nobody sits out.</div>
+    </div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 22px 26px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="padding: 2px 14px; border-radius: 999px; background: #DC2626; color: #fff; font-size: 16px; font-weight: 800">MODE 2</span>
+        <span style="font-size: 30px; font-weight: 800">Buzzer mode</span>
+      </div>
+      <div style="font-size: 18px; line-height: 1.45"><b>Solve a quick puzzle to buzz in:</b> hang the five prayer flags in the right order. The order you finish in is the order you answer in.</div>
+      <div style="font-size: 18px; line-height: 1.45"><b>Scoring:</b> the 1st team to buzz gets 10 seconds to answer. Right = 10 points. Wrong = no penalty, and the next team gets a turn.</div>
+      <div style="font-size: 18px; line-height: 1.45; color: #4A4660">Best for: finals and smaller groups. Fast and dramatic.</div>
+    </div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+    <div style="background: #1E1B2E; color: #fff; border-radius: 20px; padding: 22px 26px; display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 26px; font-weight: 800">Game maker · needs an account</div>
+      <div style="font-size: 17px; line-height: 1.45">Signs in on a laptop. Sees a work-style dashboard: a list of saved games, a question builder, mode and timer settings, and host controls (Start, Reveal, Next, Storm event, award team points). Runs the projector screen.</div>
+    </div>
+    <div style="background: #EAF0FD; border: 3px solid #1D4ED8; border-radius: 20px; padding: 22px 26px; display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 26px; font-weight: 800; color: #1D4ED8">Player · just the game PIN</div>
+      <div style="font-size: 17px; line-height: 1.45">No account, no download. Opens the link or scans the QR code, types the PIN and a nickname, and picks a team by flag colour. Sees only big, simple game screens, plus their own camp and result.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1780,"height":680}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

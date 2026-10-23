@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prayer Flag Pop player join</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E1B2E}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFFDF8; color: #1E1B2E; font-family: 'Baloo 2', system-ui, sans-serif; display: flex; flex-direction: column">
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); height: 12px; flex-shrink: 0">
+    <div style="background: #1D4ED8"></div><div style="background: #fff; border-bottom: 2px solid #1E1B2E"></div><div style="background: #DC2626"></div><div style="background: #16A34A"></div><div style="background: #F2B705"></div>
+  </div>
+  <sc-if value="{{ notJoined }}" hint-placeholder-val="{{ true }}">
+    <div style="padding: 24px 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1">
+      <div>
+        <div style="font-size: 22px; font-weight: 700; color: #DC2626">नमस्ते!</div>
+        <h1 style="margin: 0; font-size: 40px; line-height: 1.05; font-weight: 800">Chhito! <span style="color: #E23D28">छिटो!</span></h1>
+        <div style="font-size: 16px; color: #4A4660; margin-top: 4px">No account needed — just the game PIN.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="pin" style="font-size: 17px; font-weight: 700">Game PIN</label>
+        <input id="pin" inputmode="numeric" value="482 913" style="height: 56px; border: 3px solid #1E1B2E; border-radius: 14px; padding: 0 16px; font-size: 26px; font-weight: 800; letter-spacing: 3px; box-sizing: border-box">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="nick" style="font-size: 17px; font-weight: 700">Nickname</label>
+        <input id="nick" placeholder="e.g. Momo Master" style="height: 56px; border: 3px solid #1E1B2E; border-radius: 14px; padding: 0 16px; font-size: 20px; box-sizing: border-box">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="font-size: 17px; font-weight: 700">Pick your team (flag colour)</div>
+        <div style="display: flex; gap: 12px">
+          <sc-for list="{{ colors }}" as="c" hint-placeholder-count="5">
+            <button type="button" onClick="{{ c.pick }}" aria-label="{{ c.name }}" style="{{ c.style }}"></button>
+          </sc-for>
+        </div>
+        <div style="font-size: 15px; color: #4A4660">{{ meaning }}</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="font-size: 17px; font-weight: 700">Pick your climber</div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+          <button type="button" onClick="{{ pickB }}" aria-pressed="{{ bOn }}" style="{{ bStyle }}"><svg width="64" height="64" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#EAF0FD" stroke="#1E1B2E" stroke-width="2"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2"></path><path d="M16 32 Q24 37 32 32 L32 36 Q24 41 16 36 Z" fill="{{ acc }}" stroke="#1E1B2E" stroke-width="1.5"></path><circle cx="24" cy="23" r="9" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="2"></circle><circle cx="20.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="27.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="18.3" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><circle cx="29.7" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><path d="M21 28.2 Q24 30.8 27 28.2" fill="none" stroke="#1E1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M14 16 L16 7 Q24 4 33 7 L34 16 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2" stroke-linejoin="round"></path><path d="M18 10 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3" fill="none" stroke="{{ pat }}" stroke-width="1.5"></path></svg><span>Topi buddy</span></button>
+          <button type="button" onClick="{{ pickE }}" aria-pressed="{{ eOn }}" style="{{ eStyle }}"><svg width="64" height="64" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#2A3F7A" stroke="#1E1B2E" stroke-width="2"></circle><path d="M24 15 L4 5 L2 17 Z" fill="#FFF1C2" opacity="0.85"></path><circle cx="38" cy="9" r="1.2" fill="#FFFFFF"></circle><circle cx="33" cy="5" r="0.9" fill="#FFFFFF"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="23" r="8" fill="#FFFDF8" stroke="#1E1B2E" stroke-width="2"></circle><rect x="16.5" y="21" width="15" height="5" rx="2.5" fill="#1E1B2E"></rect><path d="M15 21 Q15 11 24 11 Q33 11 33 21 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="15.5" r="2.6" fill="#FFF1C2" stroke="#1E1B2E" stroke-width="1.2"></circle></svg><span>Headlamp</span></button>
+        </div>
+      </div>
+      <button type="button" onClick="{{ join }}" style="margin-top: auto; min-height: 60px; border: 0; border-radius: 16px; background: #DC2626; color: #fff; font-size: 24px; font-weight: 800">Join game</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ joined }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 32px 24px; display: flex; flex-direction: column; gap: 16px; flex-grow: 1; align-items: center; justify-content: center; text-align: center">
+      <sc-if value="{{ isB }}" hint-placeholder-val="{{ true }}"><svg width="140" height="140" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#EAF0FD" stroke="#1E1B2E" stroke-width="2"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2"></path><path d="M16 32 Q24 37 32 32 L32 36 Q24 41 16 36 Z" fill="{{ acc }}" stroke="#1E1B2E" stroke-width="1.5"></path><circle cx="24" cy="23" r="9" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="2"></circle><circle cx="20.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="27.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="18.3" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><circle cx="29.7" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><path d="M21 28.2 Q24 30.8 27 28.2" fill="none" stroke="#1E1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M14 16 L16 7 Q24 4 33 7 L34 16 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2" stroke-linejoin="round"></path><path d="M18 10 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3" fill="none" stroke="{{ pat }}" stroke-width="1.5"></path></svg></sc-if><sc-if value="{{ isE }}" hint-placeholder-val="{{ false }}"><svg width="140" height="140" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#2A3F7A" stroke="#1E1B2E" stroke-width="2"></circle><path d="M24 15 L4 5 L2 17 Z" fill="#FFF1C2" opacity="0.85"></path><circle cx="38" cy="9" r="1.2" fill="#FFFFFF"></circle><circle cx="33" cy="5" r="0.9" fill="#FFFFFF"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="23" r="8" fill="#FFFDF8" stroke="#1E1B2E" stroke-width="2"></circle><rect x="16.5" y="21" width="15" height="5" rx="2.5" fill="#1E1B2E"></rect><path d="M15 21 Q15 11 24 11 Q33 11 33 21 Z" fill="{{ col }}" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="15.5" r="2.6" fill="#FFF1C2" stroke="#1E1B2E" stroke-width="1.2"></circle></svg></sc-if>
+      <div style="font-size: 38px; font-weight: 800; line-height: 1.05">Welcome to Base Camp!</div>
+      <div style="font-size: 22px; font-weight: 800; color: #DC2626">You're on {{ teamName }}</div>
+      <div style="font-size: 18px; color: #4A4660; max-width: 280px">Your team climbs together. Up first: spend your 10 supply points.</div>
+      <button type="button" onClick="{{ leave }}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 2px solid #1E1B2E; background: transparent; font-size: 16px; font-weight: 700">Back (demo)</button>
+      <a href="Phone-Supplies.dc.html" style="font-size: 15px">Demo: host opens the supply shop →</a>
+      <a href="Ans-Sign-Phone.dc.html" style="font-size: 15px">Demo: checkpoint question (Buttons) →</a>
+      <a href="Phone-Buzzer.dc.html" style="font-size: 15px">Demo: host starts Buzzer mode →</a>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { color: 0, joined: false, climber: 'b' }; }
+  renderVals() {
+    const list = [
+      { name: 'Blue', team: 'Summit Seekers', hex: '#1D4ED8', meaning: 'Blue stands for sky and space.' },
+      { name: 'White', team: 'Snow Leopards', hex: '#FFFFFF', meaning: 'White stands for air and wind.' },
+      { name: 'Red', team: 'Himalayan Heroes', hex: '#DC2626', meaning: 'Red stands for fire.' },
+      { name: 'Green', team: 'Team Sagarmatha', hex: '#16A34A', meaning: 'Green stands for water.' },
+      { name: 'Yellow', team: 'Momo Mountaineers', hex: '#F2B705', meaning: 'Yellow stands for earth.' }
+    ];
+    const sel = this.state.color;
+    const hex = list[sel].hex;
+    const acc = { '#1D4ED8': '#F2B705', '#DC2626': '#F2B705', '#16A34A': '#F2B705', '#F2B705': '#DC2626', '#FFFFFF': '#1D4ED8' }[hex];
+    const pat = (hex === '#F2B705' || hex === '#FFFFFF') ? '#1E1B2E' : '#FFFFFF';
+    const cl = this.state.climber;
+    const card = 'min-height: 104px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 16px; font-weight: 800; color: #1E1B2E; ';
+    return {
+      col: hex, acc: acc, pat: pat,
+      isB: cl === 'b', isE: cl === 'e',
+      bOn: cl === 'b' ? 'true' : 'false', eOn: cl === 'e' ? 'true' : 'false',
+      bStyle: card + (cl === 'b' ? 'background: #fff; border: 4px solid #1E1B2E' : 'background: #FBFAF6; border: 2px solid #A9A5B8'),
+      eStyle: card + (cl === 'e' ? 'background: #fff; border: 4px solid #1E1B2E' : 'background: #FBFAF6; border: 2px solid #A9A5B8'),
+      pickB: () => this.setState({ climber: 'b' }), pickE: () => this.setState({ climber: 'e' }),
+      joined: this.state.joined,
+      notJoined: !this.state.joined,
+      join: () => this.setState({ joined: true }),
+      leave: () => this.setState({ joined: false }),
+      meaning: list[sel].team + ' · ' + list[sel].meaning,
+      teamName: list[sel].team,
+      badgeStyle: 'width: 120px; height: 140px; border: 3px solid #1E1B2E; border-radius: 6px; background: ' + list[sel].hex,
+      colors: list.map((c, i) => ({
+        ...c,
+        pick: () => this.setState({ color: i }),
+        style: 'width: 48px; height: 48px; border-radius: 12px; background: ' + c.hex + '; border: ' + (i === sel ? '4px solid #1E1B2E; outline: 3px solid #FFFDF8; outline-offset: -8px' : '2px solid #1E1B2E')
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

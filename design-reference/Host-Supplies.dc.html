@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Build your expedition host screen</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E1B2E}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; box-sizing: border-box; background: #FFFDF8; color: #1E1B2E; font-family: 'Baloo 2', system-ui, sans-serif; position: relative; overflow: hidden">
+  <svg width="1280" height="720" viewBox="0 0 1280 720" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+    <circle cx="150" cy="120" r="54" fill="#FFF1C2"></circle>
+    <path d="M0 720 L0 600 Q200 560 360 590 Q520 556 680 596 L680 720 Z" fill="#E3EDFC"></path>
+    <path d="M0 720 L0 650 Q160 620 320 652 Q480 628 680 660 L680 720 Z" fill="#8FB2EF"></path>
+    <g stroke="#1E1B2E" stroke-width="3" stroke-linejoin="round">
+      <path d="M90 660 L130 600 L170 660 Z" fill="#E23D28"></path><path d="M130 600 L130 660" fill="none"></path>
+      <path d="M190 664 L226 610 L262 664 Z" fill="#F2B705"></path><path d="M226 610 L226 664" fill="none"></path>
+      <path d="M290 666 L322 618 L354 666 Z" fill="#16A34A"></path><path d="M322 618 L322 666" fill="none"></path>
+    </g>
+  </svg>
+
+  <div style="position: absolute; left: 56px; top: 36px; width: 640px; display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 17px; font-weight: 800; letter-spacing: 1px; color: #E23D28">CHECKPOINT 1 · BASE CAMP</div>
+    <h1 style="margin: 0; font-size: 54px; line-height: 1; font-weight: 800">Build your expedition</h1>
+    <div style="font-size: 20px; color: #4A4660; line-height: 1.4">Every team has <b>10 supply points</b>. You can't take everything, so pick what your team will need on the climb. Your choices matter at later checkpoints.</div>
+  </div>
+
+  <div style="position: absolute; left: 56px; top: 228px; width: 640px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px"><div style="display: flex; justify-content: space-between; align-items: baseline"><b style="font-size: 20px">Trail map</b><span style="padding: 0 10px; border-radius: 999px; background: #1E1B2E; color: #F2B705; font-weight: 800">3</span></div><span style="font-size: 15px; color: #4A4660">Know the route</span></div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px"><div style="display: flex; justify-content: space-between; align-items: baseline"><b style="font-size: 20px">Warm layers</b><span style="padding: 0 10px; border-radius: 999px; background: #1E1B2E; color: #F2B705; font-weight: 800">3</span></div><span style="font-size: 15px; color: #4A4660">Survive the cold</span></div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px"><div style="display: flex; justify-content: space-between; align-items: baseline"><b style="font-size: 20px">Weather radio</b><span style="padding: 0 10px; border-radius: 999px; background: #1E1B2E; color: #F2B705; font-weight: 800">2</span></div><span style="font-size: 15px; color: #4A4660">Hear about changes</span></div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px"><div style="display: flex; justify-content: space-between; align-items: baseline"><b style="font-size: 20px">Extra food</b><span style="padding: 0 10px; border-radius: 999px; background: #1E1B2E; color: #F2B705; font-weight: 800">2</span></div><span style="font-size: 15px; color: #4A4660">Keep your energy</span></div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px"><div style="display: flex; justify-content: space-between; align-items: baseline"><b style="font-size: 20px">Emergency kit</b><span style="padding: 0 10px; border-radius: 999px; background: #1E1B2E; color: #F2B705; font-weight: 800">3</span></div><span style="font-size: 15px; color: #4A4660">For the unexpected</span></div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px"><div style="display: flex; justify-content: space-between; align-items: baseline"><b style="font-size: 20px">Rope + ice axe</b><span style="padding: 0 10px; border-radius: 999px; background: #1E1B2E; color: #F2B705; font-weight: 800">4</span></div><span style="font-size: 15px; color: #4A4660">For steep sections</span></div>
+  </div>
+
+  <div style="position: absolute; left: 56px; top: 452px; width: 640px; background: #1E1B2E; color: #FFF6DC; border-radius: 16px; padding: 14px 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px">
+    <div style="font-size: 14px; font-weight: 800; letter-spacing: 1px; color: #F2B705">THEN · BASE CAMP QUESTION</div>
+    <div style="font-size: 22px; font-weight: 800; line-height: 1.2">Before Election Day, what should you check first?</div>
+    <div style="font-size: 15px; color: #D9D6E4">Teams that packed well and answer right earn a bonus supply token.</div>
+  </div>
+
+  <div style="position: absolute; right: 48px; top: 36px; width: 470px; display: flex; flex-direction: column; gap: 14px">
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 16px 20px; display: flex; align-items: center; gap: 18px">
+      <div style="width: 84px; height: 84px; border-radius: 50%; border: 8px solid #E23D28; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800">4:12</div>
+      <div style="font-size: 18px; line-height: 1.35"><b>Shop is open</b><br>Talk it over and lock in your supplies on one team phone.</div>
+    </div>
+    <div style="background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 20px; font-weight: 800">Team packs</div>
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 17px"><span style="width: 14px; height: 14px; border-radius: 4px; background: #1D4ED8"></span><span style="flex-grow: 1">Summit Seekers</span><b style="color: #15803D">Packed · 10/10</b></div>
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 17px"><span style="width: 14px; height: 14px; border-radius: 4px; background: #DC2626"></span><span style="flex-grow: 1">Himalayan Heroes</span><b style="color: #15803D">Packed · 9/10</b></div>
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 17px"><span style="width: 14px; height: 14px; border-radius: 4px; background: #16A34A"></span><span style="flex-grow: 1">Team Sagarmatha</span><span>choosing… 7/10</span></div>
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 17px"><span style="width: 14px; height: 14px; border-radius: 4px; background: #F2B705"></span><span style="flex-grow: 1">Momo Mountaineers</span><span>choosing… 5/10</span></div>
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 17px"><span style="width: 14px; height: 14px; border-radius: 4px; background: #fff; border: 2px solid #1E1B2E"></span><span style="flex-grow: 1">Snow Leopards</span><span>choosing… 3/10</span></div>
+    </div>
+    <a href="Mountain.dc.html" style="min-height: 56px; border-radius: 16px; background: #E23D28; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 21px; font-weight: 800; text-decoration: none">Close shop → Checkpoint 2: The Route</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

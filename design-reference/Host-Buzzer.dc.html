@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Buzzer mode host screen</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E1B2E}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; box-sizing: border-box; background: #FFFDF8; color: #1E1B2E; font-family: 'Baloo 2', system-ui, sans-serif; position: relative; overflow: hidden">
+  <svg width="1280" height="720" viewBox="0 0 1280 720" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+    <circle cx="400" cy="200" r="64" fill="#FFF1C2"></circle>
+    <path d="M0 600 Q200 540 360 580 Q520 548 640 590 Q800 540 960 578 Q1120 548 1280 584 L1280 720 L0 720 Z" fill="#E3EDFC"></path>
+    <path d="M180 640 L300 540 L380 500 L470 380 L540 300 L600 190 L640 130 L690 200 L760 290 L820 360 L900 430 L980 520 L1100 640 Z" fill="#A9C8F7"></path>
+    <path d="M470 380 L520 430 L496 520 L444 640 L340 640 L414 520 Z" fill="#9ABDF4"></path>
+    <path d="M640 130 L690 200 L760 290 L820 360 L900 430 L980 520 L1100 640 L780 640 L742 520 L702 400 L668 260 Z" fill="#7FA6EC"></path>
+    <path d="M820 360 L860 440 L840 540 L880 640 L960 640 L920 540 L940 470 Z" fill="#6F9BE8"></path>
+    <g fill="none" stroke-linecap="round" stroke-width="3">
+      <path d="M706 330 L756 352" stroke="#5C86D8"></path><path d="M720 380 L800 410" stroke="#5C86D8"></path>
+      <path d="M744 460 L840 486" stroke="#5C86D8"></path><path d="M770 560 L880 576" stroke="#5C86D8"></path>
+      <path d="M520 360 L470 420" stroke="#D6E4FA"></path><path d="M600 420 L540 520" stroke="#D6E4FA"></path><path d="M380 560 L330 610" stroke="#D6E4FA"></path>
+    </g>
+    <path d="M579 228 L600 190 L640 130 L668 260 L652 244 L640 268 L622 240 L604 256 Z" fill="#FFFFFF"></path>
+    <path d="M640 130 L690 200 L706 234 L690 250 L678 236 L668 260 Z" fill="#E2ECFC"></path>
+    <path d="M622 300 L652 288 L664 360 L644 430 L630 362 Z" fill="#EEF4FE"></path>
+    <path d="M540 300 L562 292 L552 326 Z" fill="#FFFFFF"></path>
+    <path d="M760 290 L778 312 L748 318 Z" fill="#E2ECFC"></path>
+    <path d="M470 380 L492 376 L478 404 Z" fill="#FFFFFF"></path>
+    <g fill="#FFFFFF" opacity="0.92">
+      <ellipse cx="300" cy="470" rx="60" ry="18"></ellipse><ellipse cx="340" cy="458" rx="40" ry="20"></ellipse>
+      <ellipse cx="990" cy="460" rx="64" ry="18"></ellipse><ellipse cx="950" cy="448" rx="38" ry="18"></ellipse>
+    </g>
+    <path d="M0 720 L0 628 Q160 588 300 632 Q460 604 640 652 Q820 604 980 632 Q1120 594 1280 624 L1280 720 Z" fill="#8FB2EF"></path>
+    <g fill="#6A93E0">
+      <path d="M90 628 L104 596 L118 628 Z"></path><path d="M120 624 L136 586 L152 624 Z"></path><path d="M206 624 L220 594 L234 624 Z"></path>
+      <path d="M1040 622 L1056 586 L1072 622 Z"></path><path d="M1076 620 L1090 592 L1104 620 Z"></path><path d="M1180 624 L1196 588 L1212 624 Z"></path>
+    </g>
+    <path d="M440 610 L720 555 L560 480 L720 400 L640 170" fill="none" stroke="#3A63C4" stroke-width="3" stroke-dasharray="8 8" stroke-linecap="round"></path>
+    <path d="M640 170 L640 104" stroke="#1E1B2E" stroke-width="3"></path>
+    <rect x="641" y="104" width="14" height="12" fill="#1D4ED8"></rect>
+    <rect x="655" y="108" width="14" height="12" fill="#fff" stroke="#1E1B2E" stroke-width="1.5"></rect>
+    <rect x="669" y="112" width="14" height="12" fill="#DC2626"></rect>
+    <rect x="683" y="116" width="14" height="12" fill="#16A34A"></rect>
+    <rect x="697" y="120" width="14" height="12" fill="#F2B705"></rect>
+    <g fill="#FFFFFF" stroke="#1E1B2E" stroke-width="3">
+      <circle cx="440" cy="610" r="8"></circle><circle cx="720" cy="555" r="8"></circle><circle cx="560" cy="480" r="8"></circle>
+      <circle cx="720" cy="400" r="8"></circle>
+    </g>
+    <circle cx="640" cy="170" r="9" fill="#DC2626" stroke="#1E1B2E" stroke-width="3"></circle>
+    <g font-family="'Baloo 2', sans-serif" font-size="17" font-weight="800" fill="#1E1B2E" stroke="#FFFFFF" stroke-width="5" paint-order="stroke" stroke-linejoin="round" text-anchor="end">
+      <text x="424" y="616">1 · Base Camp</text>
+      <text x="704" y="561">2 · Route Checkpoint</text>
+      <text x="544" y="486">3 · Storm Zone</text>
+      <text x="704" y="406">4 · Final Ascent</text>
+      <text x="622" y="176">5 · Summit · 8,849 m</text>
+    </g>
+  </svg>
+
+  <div style="position: absolute; left: 330px; top: 18px; width: 620px; text-align: center">
+    <div style="font-size: 17px; font-weight: 700; color: #DC2626; letter-spacing: 1px">BUZZER MODE · CHECKPOINT 2 · THE ROUTE</div>
+    <div style="font-size: 30px; font-weight: 800; line-height: 1.1">Dashain, Nepal's biggest festival, lasts how many days?</div>
+  </div>
+
+  <div style="position: absolute; left: 40px; top: 130px; width: 260px; display: flex; flex-direction: column; gap: 8px; background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 16px 18px; box-sizing: border-box">
+    <div style="font-size: 20px; font-weight: 800">Team buzz-in order</div>
+    <sc-for list="{{ queue }}" as="q" hint-placeholder-count="4">
+      <div style="{{ q.rowStyle }}"><span style="{{ q.numStyle }}">{{ q.n }}</span><span style="flex-grow: 1">{{ q.name }}</span><span style="font-size: 14px">{{ q.status }}</span></div>
+    </sc-for>
+    <div style="font-size: 15px; color: #4A4660">1 team still solving the flag puzzle</div>
+  </div>
+
+  <div style="position: absolute; right: 40px; top: 130px; width: 240px; display: flex; flex-direction: column; gap: 10px; align-items: center; background: #fff; border: 3px solid #1E1B2E; border-radius: 20px; padding: 16px 18px; box-sizing: border-box">
+    <div style="font-size: 18px; font-weight: 800; text-align: center">{{ turnLabel }}</div>
+    <div style="width: 88px; height: 88px; border-radius: 50%; border: 8px solid #DC2626; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 800">7</div>
+    <div style="font-size: 15px; color: #4A4660">seconds to answer</div>
+    <div style="font-size: 13px; font-weight: 800; letter-spacing: 1px; align-self: flex-start">HOST CONTROLS</div>
+    <a href="Host-Reveal.dc.html" style="min-height: 44px; width: 100%; border-radius: 12px; background: #15803D; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; text-decoration: none">Right → reveal</a>
+    <button type="button" onClick="{{ wrong }}" style="min-height: 44px; width: 100%; border-radius: 12px; border: 2px solid #1E1B2E; background: #fff; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer">{{ wrongLabel }}</button>
+  </div>
+
+  <div style="position: absolute; left: 736px; top: 382px; display: flex; gap: 4px">
+    <div title="Summit Seekers" style="width: 40px; height: 40px"><svg width="40" height="40" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#EAF0FD" stroke="#1E1B2E" stroke-width="2"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="#1D4ED8" stroke="#1E1B2E" stroke-width="2"></path><path d="M16 32 Q24 37 32 32 L32 36 Q24 41 16 36 Z" fill="#F2B705" stroke="#1E1B2E" stroke-width="1.5"></path><circle cx="24" cy="23" r="9" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="2"></circle><circle cx="20.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="27.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="18.3" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><circle cx="29.7" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><path d="M21 28.2 Q24 30.8 27 28.2" fill="none" stroke="#1E1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M14 16 L16 7 Q24 4 33 7 L34 16 Z" fill="#1D4ED8" stroke="#1E1B2E" stroke-width="2" stroke-linejoin="round"></path><path d="M18 10 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3" fill="none" stroke="#FFFFFF" stroke-width="1.5"></path></svg></div>
+  </div>
+  <div style="position: absolute; left: 576px; top: 462px; display: flex; gap: 4px">
+    <div title="Himalayan Heroes" style="width: 40px; height: 40px"><svg width="40" height="40" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#2A3F7A" stroke="#1E1B2E" stroke-width="2"></circle><path d="M24 15 L4 5 L2 17 Z" fill="#FFF1C2" opacity="0.85"></path><circle cx="38" cy="9" r="1.2" fill="#FFFFFF"></circle><circle cx="33" cy="5" r="0.9" fill="#FFFFFF"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="#DC2626" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="23" r="8" fill="#FFFDF8" stroke="#1E1B2E" stroke-width="2"></circle><rect x="16.5" y="21" width="15" height="5" rx="2.5" fill="#1E1B2E"></rect><path d="M15 21 Q15 11 24 11 Q33 11 33 21 Z" fill="#DC2626" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="15.5" r="2.6" fill="#FFF1C2" stroke="#1E1B2E" stroke-width="1.2"></circle></svg></div>
+    <div title="Team Sagarmatha" style="width: 40px; height: 40px"><svg width="40" height="40" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#EAF0FD" stroke="#1E1B2E" stroke-width="2"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="#16A34A" stroke="#1E1B2E" stroke-width="2"></path><path d="M16 32 Q24 37 32 32 L32 36 Q24 41 16 36 Z" fill="#F2B705" stroke="#1E1B2E" stroke-width="1.5"></path><circle cx="24" cy="23" r="9" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="2"></circle><circle cx="20.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="27.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="18.3" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><circle cx="29.7" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><path d="M21 28.2 Q24 30.8 27 28.2" fill="none" stroke="#1E1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M14 16 L16 7 Q24 4 33 7 L34 16 Z" fill="#16A34A" stroke="#1E1B2E" stroke-width="2" stroke-linejoin="round"></path><path d="M18 10 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3" fill="none" stroke="#FFFFFF" stroke-width="1.5"></path></svg></div>
+  </div>
+  <div style="position: absolute; left: 736px; top: 537px; display: flex; gap: 4px">
+    <div title="Momo Mountaineers" style="width: 40px; height: 40px"><svg width="40" height="40" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#2A3F7A" stroke="#1E1B2E" stroke-width="2"></circle><path d="M24 15 L4 5 L2 17 Z" fill="#FFF1C2" opacity="0.85"></path><circle cx="38" cy="9" r="1.2" fill="#FFFFFF"></circle><circle cx="33" cy="5" r="0.9" fill="#FFFFFF"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="#F2B705" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="23" r="8" fill="#FFFDF8" stroke="#1E1B2E" stroke-width="2"></circle><rect x="16.5" y="21" width="15" height="5" rx="2.5" fill="#1E1B2E"></rect><path d="M15 21 Q15 11 24 11 Q33 11 33 21 Z" fill="#F2B705" stroke="#1E1B2E" stroke-width="2"></path><circle cx="24" cy="15.5" r="2.6" fill="#FFF1C2" stroke="#1E1B2E" stroke-width="1.2"></circle></svg></div>
+    <div title="Snow Leopards" style="width: 40px; height: 40px"><svg width="40" height="40" viewBox="0 0 48 48" aria-hidden="true" style="display: block"><circle cx="24" cy="24" r="23" fill="#EAF0FD" stroke="#1E1B2E" stroke-width="2"></circle><path d="M11 46 Q11 31 24 31 Q37 31 37 46 Z" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="2"></path><path d="M16 32 Q24 37 32 32 L32 36 Q24 41 16 36 Z" fill="#1D4ED8" stroke="#1E1B2E" stroke-width="1.5"></path><circle cx="24" cy="23" r="9" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="2"></circle><circle cx="20.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="27.5" cy="23" r="1.6" fill="#1E1B2E"></circle><circle cx="18.3" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><circle cx="29.7" cy="27.6" r="1.8" fill="#E8776F" opacity="0.65"></circle><path d="M21 28.2 Q24 30.8 27 28.2" fill="none" stroke="#1E1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M14 16 L16 7 Q24 4 33 7 L34 16 Z" fill="#FFFFFF" stroke="#1E1B2E" stroke-width="2" stroke-linejoin="round"></path><path d="M18 10 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3" fill="none" stroke="#1E1B2E" stroke-width="1.5"></path></svg></div>
+  </div>
+  <div style="position: absolute; left: 456px; top: 592px; display: flex; gap: 4px; align-items: center">
+    <div style="height: 36px; padding: 0 12px; border-radius: 18px; background: #1E1B2E; color: #fff; display: flex; align-items: center; font-weight: 800; font-size: 16px">23 climbers · 5 teams</div>
+  </div>
+
+  <div style="position: absolute; left: 60px; top: 637px; width: 260px; height: 70px; box-sizing: border-box; padding: 12px 18px 10px; background: #1D4ED8; color: #fff; box-shadow: inset 0 9px 0 rgba(0,0,0,0.22); clip-path: polygon(0 0, 100% 0, 100% 86%, 92% 100%, 83% 86%, 75% 100%, 67% 86%, 58% 100%, 50% 86%, 42% 100%, 33% 86%, 25% 100%, 17% 86%, 8% 100%, 0 86%); transform: rotate(-1.5deg); display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800"><span style="width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #1D4ED8; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0">क</span>3 days</div>
+  <div style="position: absolute; left: 360px; top: 646px; width: 260px; height: 70px; box-sizing: border-box; padding: 12px 18px 10px; background: #DC2626; color: #fff; box-shadow: inset 0 9px 0 rgba(0,0,0,0.22); clip-path: polygon(0 0, 100% 0, 100% 86%, 92% 100%, 83% 86%, 75% 100%, 67% 86%, 58% 100%, 50% 86%, 42% 100%, 33% 86%, 25% 100%, 17% 86%, 8% 100%, 0 86%); transform: rotate(1deg); display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800"><span style="width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #DC2626; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0">ख</span>7 days</div>
+  <div style="position: absolute; left: 660px; top: 646px; width: 260px; height: 70px; box-sizing: border-box; padding: 12px 18px 10px; background: #15803D; color: #fff; box-shadow: inset 0 9px 0 rgba(0,0,0,0.22); clip-path: polygon(0 0, 100% 0, 100% 86%, 92% 100%, 83% 86%, 75% 100%, 67% 86%, 58% 100%, 50% 86%, 42% 100%, 33% 86%, 25% 100%, 17% 86%, 8% 100%, 0 86%); transform: rotate(-1deg); display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800"><span style="width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #15803D; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0">ग</span>15 days</div>
+  <div style="position: absolute; left: 960px; top: 637px; width: 260px; height: 70px; box-sizing: border-box; padding: 12px 18px 10px; background: #F2B705; color: #1E1B2E; box-shadow: inset 0 9px 0 rgba(0,0,0,0.18); clip-path: polygon(0 0, 100% 0, 100% 86%, 92% 100%, 83% 86%, 75% 100%, 67% 86%, 58% 100%, 50% 86%, 42% 100%, 33% 86%, 25% 100%, 17% 86%, 8% 100%, 0 86%); transform: rotate(1.5deg); display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800"><span style="width: 34px; height: 34px; border-radius: 50%; background: #1E1B2E; color: #F2B705; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0">घ</span>30 days</div>
+  <svg width="1280" height="80" viewBox="0 0 1280 80" aria-hidden="true" style="position: absolute; left: 0; top: 620px">
+    <path d="M20 14 Q640 50 1260 14" fill="none" stroke="#1E1B2E" stroke-width="3" stroke-linecap="round"></path>
+    <circle cx="20" cy="14" r="5" fill="#1E1B2E"></circle><circle cx="1260" cy="14" r="5" fill="#1E1B2E"></circle>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#DC2626","options":["#DC2626","#1D4ED8","#16A34A"]},"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { turn: 0 }; }
+  renderVals() {
+    const people = [
+      { name: 'Himalayan Heroes', color: '#DC2626', fg: '#fff' },
+      { name: 'Summit Seekers', color: '#1D4ED8', fg: '#fff' },
+      { name: 'Team Sagarmatha', color: '#16A34A', fg: '#fff' },
+      { name: 'Momo Mountaineers', color: '#F2B705', fg: '#1E1B2E' }
+    ];
+    const t = this.state.turn;
+    return {
+      accent: this.props.accent ?? '#DC2626',
+      turnLabel: people[t].name + ' — answering now',
+      wrongLabel: t < people.length - 1 ? 'Wrong → ' + people[t + 1].name + "'s turn" : 'Wrong → reveal answer',
+      wrong: () => this.setState({ turn: t < people.length - 1 ? t + 1 : 0 }),
+      queue: people.map((p, i) => ({
+        n: i + 1,
+        name: p.name,
+        status: i < t ? 'missed' : (i === t ? 'answering' : 'waiting'),
+        numStyle: 'width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0; background: ' + p.color + '; color: ' + p.fg,
+        rowStyle: 'display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 12px; font-size: 18px; font-weight: 700; ' + (i === t ? 'background: #FFF1C2; border: 2px solid #1E1B2E' : (i < t ? 'opacity: 0.45; border: 2px solid transparent' : 'border: 2px solid transparent'))
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Maker sign in</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E1B2E}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; box-sizing: border-box; background: #FFFDF8; color: #1E1B2E; font-family: 'Baloo 2', system-ui, sans-serif; display: flex">
+  <div style="width: 560px; flex-shrink: 0; background: #E3EDFC; position: relative; overflow: hidden; padding: 56px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: grid; grid-template-columns: repeat(5, 28px); gap: 6px">
+      <div style="height: 34px; background: #1D4ED8"></div><div style="height: 34px; background: #fff; border: 2px solid #1E1B2E; box-sizing: border-box"></div><div style="height: 34px; background: #DC2626"></div><div style="height: 34px; background: #16A34A"></div><div style="height: 34px; background: #F2B705"></div>
+    </div>
+    <div style="font-size: 20px; font-weight: 700; color: #DC2626">Chhito! · for game makers</div>
+    <h1 style="margin: 0; font-size: 52px; line-height: 1.02; font-weight: 800">Build the climb. Host the night.</h1>
+    <div style="font-size: 19px; line-height: 1.45; color: #2F3A5A; max-width: 420px">Make quiz games about Nepal and voting, save them, and host them on a projector. Your account keeps your games.</div>
+    <svg width="560" height="260" viewBox="0 0 560 260" aria-hidden="true" style="position: absolute; left: 0; bottom: 0">
+      <path d="M0 260 L120 170 L200 120 L260 70 L300 30 L340 72 L400 120 L480 180 L560 230 L560 260 Z" fill="#A9C8F7"></path>
+      <path d="M300 30 L340 72 L400 120 L480 180 L560 230 L560 260 L400 260 L370 180 L330 90 Z" fill="#7FA6EC"></path>
+      <path d="M282 52 L300 30 L318 56 L308 52 L300 64 L292 52 Z" fill="#fff"></path>
+      <path d="M0 260 L0 236 Q140 214 280 240 Q420 214 560 236 L560 260 Z" fill="#8FB2EF"></path>
+    </svg>
+  </div>
+  <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 40px">
+    <div style="width: 440px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 2px solid #1E1B2E; border-radius: 14px; overflow: hidden">
+        <button type="button" onClick="{{ toSignIn }}" style="{{ tabA }}">Sign in</button>
+        <button type="button" onClick="{{ toCreate }}" style="{{ tabB }}">Create account</button>
+      </div>
+      <sc-if value="{{ creating }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="mname" style="font-size: 15px; font-weight: 700">Your name</label>
+          <input id="mname" placeholder="Maya" style="height: 48px; border: 2px solid #1E1B2E; border-radius: 12px; padding: 0 14px; font-size: 17px; box-sizing: border-box">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="mclub" style="font-size: 15px; font-weight: 700">Club or organization</label>
+          <input id="mclub" placeholder="[CLUB NAME]" style="height: 48px; border: 2px solid #1E1B2E; border-radius: 12px; padding: 0 14px; font-size: 17px; box-sizing: border-box">
+        </div>
+      </sc-if>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="memail" style="font-size: 15px; font-weight: 700">Email</label>
+        <input id="memail" type="email" placeholder="you@school.edu" style="height: 48px; border: 2px solid #1E1B2E; border-radius: 12px; padding: 0 14px; font-size: 17px; box-sizing: border-box">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="mpass" style="font-size: 15px; font-weight: 700">Password</label>
+        <input id="mpass" type="password" value="password" style="height: 48px; border: 2px solid #1E1B2E; border-radius: 12px; padding: 0 14px; font-size: 17px; box-sizing: border-box">
+      </div>
+      <a href="Maker-Dashboard.dc.html" style="min-height: 52px; border-radius: 14px; background: #1E1B2E; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800; text-decoration: none">{{ cta }}</a>
+      <div style="border-top: 2px dashed #C9C4D6; padding-top: 14px; font-size: 16px; color: #4A4660; line-height: 1.4">Here to play? You don't need an account. Go to <b>[GAME URL]</b> and enter the game PIN.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { creating: false }; }
+  renderVals() {
+    const c = this.state.creating;
+    const on = 'min-height: 46px; border: 0; background: #1E1B2E; color: #fff; font-size: 17px; font-weight: 800';
+    const off = 'min-height: 46px; border: 0; background: #fff; color: #1E1B2E; font-size: 17px; font-weight: 700';
+    return {
+      creating: c,
+      tabA: c ? off : on,
+      tabB: c ? on : off,
+      cta: c ? 'Create account' : 'Sign in',
+      toSignIn: () => this.setState({ creating: false }),
+      toCreate: () => this.setState({ creating: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

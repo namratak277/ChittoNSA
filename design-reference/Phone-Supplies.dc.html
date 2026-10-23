@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Player supply shop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E1B2E}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFFDF8; color: #1E1B2E; font-family: 'Baloo 2', system-ui, sans-serif; display: flex; flex-direction: column">
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); height: 12px; flex-shrink: 0">
+    <div style="background: #1D4ED8"></div><div style="background: #fff; border-bottom: 2px solid #1E1B2E"></div><div style="background: #DC2626"></div><div style="background: #16A34A"></div><div style="background: #F2B705"></div>
+  </div>
+  <div style="padding: 20px 20px 24px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1">
+    <div>
+      <div style="font-size: 14px; font-weight: 800; color: #DC2626; letter-spacing: 1px">CHECKPOINT 1 · BASE CAMP · HIMALAYAN HEROES</div>
+      <div style="font-size: 28px; font-weight: 800; line-height: 1.05">Pack your team's supplies</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 800"><span>Supply points</span><span>{{ spentLabel }}</span></div>
+      <div style="display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px">
+        <sc-for list="{{ pips }}" as="p" hint-placeholder-count="10">
+          <div style="{{ p.style }}"></div>
+        </sc-for>
+      </div>
+    </div>
+    <sc-if value="{{ shopping }}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{ items }}" as="it" hint-placeholder-count="6">
+          <button type="button" onClick="{{ it.toggle }}" aria-pressed="{{ it.on }}" style="{{ it.style }}">
+            <span style="{{ it.check }}">{{ it.mark }}</span>
+            <span style="flex-grow: 1; text-align: left"><b style="font-size: 18px">{{ it.name }}</b><br><span style="font-size: 14px; color: #4A4660">{{ it.why }}</span></span>
+            <span style="padding: 0 10px; border-radius: 999px; background: #1E1B2E; color: #F2B705; font-weight: 800; font-size: 16px">{{ it.cost }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="font-size: 14px; font-weight: 700; color: #B91C1C; min-height: 20px">{{ msg }}</div>
+      <button type="button" onClick="{{ lock }}" style="margin-top: auto; min-height: 56px; border: 0; border-radius: 16px; background: #DC2626; color: #fff; font-size: 21px; font-weight: 800">Lock in our supplies</button>
+    </sc-if>
+    <sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}">
+      <div style="border: 3px solid #1E1B2E; border-radius: 18px; background: #DCF5E3; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 28px; font-weight: 800; line-height: 1.05">Packed and ready!</div>
+        <div style="font-size: 16px; line-height: 1.4">{{ packedList }}</div>
+        <div style="font-size: 15px; color: #4A4660">Your supplies can help at later checkpoints, so watch for the Storm Zone.</div>
+      </div>
+      <div style="background: #1E1B2E; color: #FFF6DC; border-radius: 16px; padding: 14px 16px; font-size: 18px; font-weight: 700; line-height: 1.35">Next on the big screen: "Before Election Day, what should you check first?"</div>
+      <a href="Ans-Sign-Phone.dc.html" style="font-size: 15px; text-align: center">Demo: next checkpoint question →</a>
+      <button type="button" onClick="{{ unlock }}" style="margin-top: auto; min-height: 46px; border-radius: 14px; border: 2px solid #1E1B2E; background: #fff; font-size: 16px; font-weight: 700">Change supplies (demo)</button>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { picked: [0, 2, 3], locked: false, msg: '' }; }
+  renderVals() {
+    const items = [
+      { name: 'Trail map', why: 'Know the route', cost: 3 },
+      { name: 'Warm layers', why: 'Survive the cold', cost: 3 },
+      { name: 'Weather radio', why: 'Hear about changes', cost: 2 },
+      { name: 'Extra food', why: 'Keep your energy', cost: 2 },
+      { name: 'Emergency kit', why: 'For the unexpected', cost: 3 },
+      { name: 'Rope + ice axe', why: 'For steep sections', cost: 4 }
+    ];
+    const picked = this.state.picked;
+    const spent = picked.reduce((a, i) => a + items[i].cost, 0);
+    return {
+      shopping: !this.state.locked,
+      locked: this.state.locked,
+      msg: this.state.msg,
+      spentLabel: spent + ' of 10 used',
+      pips: Array.from({ length: 10 }, (_, i) => ({ style: 'height: 14px; border-radius: 4px; border: 2px solid #1E1B2E; background: ' + (i < spent ? '#F2B705' : '#fff') })),
+      packedList: picked.map((i) => items[i].name).join(' · ') || 'Nothing packed yet',
+      lock: () => this.setState({ locked: true, msg: '' }),
+      unlock: () => this.setState({ locked: false }),
+      items: items.map((it, i) => {
+        const on = picked.includes(i);
+        return {
+          ...it,
+          on: on ? 'true' : 'false',
+          mark: on ? '✓' : '',
+          check: 'width: 30px; height: 30px; border-radius: 8px; border: 2px solid #1E1B2E; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; ' + (on ? 'background: #16A34A; color: #fff' : 'background: #fff'),
+          style: 'min-height: 58px; border-radius: 14px; padding: 6px 12px; display: flex; align-items: center; gap: 12px; color: #1E1B2E; ' + (on ? 'background: #fff; border: 3px solid #1E1B2E' : 'background: #FBFAF6; border: 2px solid #A9A5B8'),
+          toggle: () => {
+            if (on) { this.setState({ picked: picked.filter((x) => x !== i), msg: '' }); return; }
+            if (spent + it.cost > 10) { this.setState({ msg: 'Not enough points. Drop something first.' }); return; }
+            this.setState({ picked: picked.concat([i]), msg: '' });
+          }
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
