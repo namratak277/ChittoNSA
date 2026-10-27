@@ -2,8 +2,8 @@
 
 import { useState, useSyncExternalStore } from "react";
 
-export const STAGE_WIDTH = 1280;
-export const STAGE_HEIGHT = 720;
+const STAGE_WIDTH = 1280;
+const STAGE_HEIGHT = 720;
 
 function subscribe(onChange: () => void) {
   window.addEventListener("resize", onChange);

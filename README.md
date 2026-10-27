@@ -14,7 +14,7 @@ The `design-reference/` folder contains the approved mockups (one file per scree
 - **Players never need an account.** Players join with a 6-digit game PIN + nickname. Only game makers have accounts.
 - **Privacy.** Store no personal info about players beyond nickname and team. For voting plans, the server stores only *that a plan was made* (a boolean count), never the plan's content. The plan stays on the player's phone.
 - **No elimination.** Wrong answers never cost points or knock a team out.
-- **Official info only.** Link to vote.gov and the NC State Board of Elections (ncsbe.gov). Leave any date/deadline as a placeholder for the host to fill in; never hardcode election dates.
+- **Official info only.** Link to vote.gov and the NC State Board of Elections (ncsbe.gov). Election dates and deadlines come only from ncsbe.gov, live in `content/seed.json` (never in code), and stay editable in Host setup.
 - **Nepali text must render correctly** (Devanagari). Use fonts that support it (below).
 
 ## 2. Three kinds of screens (same web app, different routes)
@@ -179,7 +179,7 @@ Use row-level security: makers can only read/write their own games; players can 
 
 ## 14. Placeholders the host fills in (never invent values)
 
-`[CLUB NAME]`, `[GAME URL]`, `[PRIZE]`, `[NC REGISTRATION DEADLINE]`, `[ELECTION DATE]`, `[CLUB INSTAGRAM]`. Make these editable in Host setup or a settings file.
+`[CLUB NAME]`, `[GAME URL]`, `[NC REGISTRATION DEADLINE]`, `[EARLY VOTING]`, `[ELECTION DATE]`, `[CLUB INSTAGRAM]`. Make these editable in Host setup or a settings file. There is no prize.
 
 ## 15. Content still being written
 
@@ -207,8 +207,10 @@ Final question set, Base Camp answer choices, Route Checkpoint info cards, extra
 - **Host scorecard** (Storm Zone and final scenarios): +10 plan, +5 why (explains its reasoning), +5 backup, +5 team. "Reset this round" takes back this screen's taps.
 - **Final Ascent:** a final-scenario question is talked through (no answer buttons); every team gets +10 at its reveal.
 - **Buzzer mode:** finish order comes from the server. The team whose turn it is answers on their phones; the projector shows what they picked (and whether it's right) so the host can tap Right → reveal or Wrong → next team.
+- **Automatic reveal:** in Buttons mode the answer reveals by itself 1 second after the timer runs out (the host can still press "Reveal now"). In Buzzer mode the server judges the pick: right → reveal, wrong or out of time → next team; when every team has missed, the answer reveals. The projector's reveal shows a ranked leaderboard (total points and +points this round, from answers and speed). Talk-it-through questions stay host-controlled.
 - **Host settings:** the [PLACEHOLDERS] are filled in on Host setup, saved with each session (and remembered on that laptop). Blank fields keep the placeholder.
-- **Club and place:** the club is UNCG Nepalese Student Association (Instagram @uncgnsa), set as defaults in `content/seed.json`. Voting info is for Greensboro, NC (Guilford County) and links only to official tools: the NC State Board of Elections lookups on ncsbe.gov (registration, polling place, early voting sites, vote by mail, voter ID, county boards), which work for every NC county, and vote.gov for players registered in another state. The link list lives in `NC_VOTING_LINKS` in `src/lib/settings.ts`. Dates and deadlines stay placeholders for the host.
+- **Club and place:** the club is UNCG Nepalese Student Association (Instagram @uncgnsa), set as defaults in `content/seed.json`. Voting info is for Greensboro, NC (Guilford County) and links only to official tools: the NC State Board of Elections lookups on ncsbe.gov (registration, polling place, early voting sites, vote by mail, voter ID, county boards), which work for every NC county, and vote.gov for players registered in another state. The link list lives in `NC_VOTING_LINKS` in `src/lib/settings.ts`. Defaults are set from ncsbe.gov for the Nov. 3, 2026 general election: registration deadline Fri., Oct. 9 (5 p.m.), early voting Thu., Oct. 15 – Sat., Oct. 31 (ends 3 p.m.), with same-day registration during early voting. Update them in `content/seed.json` (or Host setup) for a later election. There is no prize.
+- **Default game:** "Dashain & Democracy Night" has 13 questions (12 answer questions alternating voting and Nepal, plus the Final Ascent scenario) and 3 storm cards (map, weather radio, emergency kit). Makers can delete a game from My games; a new one starts from the seed content.
 - **Voting plan** is saved only in the phone's localStorage; the server only counts that a plan was made.
 
 ## 17. Setup and deploy

@@ -1,7 +1,6 @@
 // Hex values for SVG drawings and inline styles. Mirrors the tokens in src/app/globals.css.
 
 export const INK = "#1E1B2E";
-export const BODY = "#4A4660";
 export const PAGE = "#FFFDF8";
 
 export const FLAG = {

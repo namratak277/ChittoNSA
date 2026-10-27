@@ -1,11 +1,11 @@
 {
-  "_note": "Starting content for new games (edit it in the question builder). Never put real election dates here; keep the [PLACEHOLDERS] for the host to fill in. Voting content is only about how to prepare to vote, never who to vote for.",
+  "_note": "Starting content for new games (edit it in the question builder). Election details are for the Nov. 3, 2026 NC general election, taken from ncsbe.gov; the host can change them in Host setup for a later election. Voting content is only about how to prepare to vote, never who to vote for.",
   "placeholders": {
     "CLUB NAME": "UNCG Nepalese Student Association",
     "GAME URL": "[GAME URL]",
-    "PRIZE": "[PRIZE]",
-    "NC REGISTRATION DEADLINE": "[NC REGISTRATION DEADLINE]",
-    "ELECTION DATE": "[ELECTION DATE]",
+    "NC REGISTRATION DEADLINE": "Fri., Oct. 9, 2026 (5 p.m.)",
+    "EARLY VOTING": "Thu., Oct. 15 – Sat., Oct. 31, 2026 (ends 3 p.m.)",
+    "ELECTION DATE": "Tue., Nov. 3, 2026",
     "CLUB INSTAGRAM": "@uncgnsa",
     "TEAM 6 NAME": "[TEAM 6 NAME]"
   },
@@ -16,7 +16,6 @@
   "questions": [
     {
       "checkpoint": 1,
-      "order": 1,
       "type": "multiple_choice",
       "topic": "voting",
       "prompt": "Before Election Day, what should you check first?",
@@ -32,8 +31,34 @@
       "timer_seconds": 20
     },
     {
+      "checkpoint": 1,
+      "type": "multiple_choice",
+      "topic": "nepal",
+      "prompt": "What is Mount Everest called in Nepali?",
+      "options": ["Sagarmatha", "Annapurna", "Kanchenjunga", "Lhotse"],
+      "correct_index": 0,
+      "reveal_title": "Everest is Sagarmatha",
+      "trail_fact": "Sagarmatha is often translated as \"forehead of the sky.\" At 8,849 m (29,032 ft), it's the highest mountain on Earth, on the border of Nepal and Tibet.",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 1,
+      "type": "multiple_choice",
+      "topic": "voting",
+      "prompt": "Who can register to vote in North Carolina?",
+      "options": [
+        "U.S. citizens who'll be 18 by Election Day and have lived in the county 30 days",
+        "Anyone who lives in North Carolina",
+        "Only people born in North Carolina",
+        "Only people with an NC driver's license"
+      ],
+      "correct_index": 0,
+      "reveal_title": "Citizen, 18, and 30 days in the county",
+      "trail_fact": "You can't be serving a felony sentence (including probation or parole). 16- and 17-year-olds can preregister and are registered automatically at 18. Details on ncsbe.gov.",
+      "timer_seconds": 20
+    },
+    {
       "checkpoint": 2,
-      "order": 1,
       "type": "info_cards",
       "topic": "voting",
       "prompt": "Your team wants to vote early in Greensboro. Which source do you trust for sites and hours?",
@@ -49,7 +74,6 @@
     },
     {
       "checkpoint": 2,
-      "order": 2,
       "type": "multiple_choice",
       "topic": "nepal",
       "prompt": "Dashain, Nepal's biggest festival, lasts how many days?",
@@ -60,8 +84,103 @@
       "timer_seconds": 20
     },
     {
+      "checkpoint": 2,
+      "type": "multiple_choice",
+      "topic": "voting",
+      "prompt": "You missed the voter registration deadline. Can you still register in North Carolina?",
+      "options": [
+        "Yes, at an early voting site in my county, during early voting",
+        "Yes, at any polling place on Election Day",
+        "No, I have to wait for the next election",
+        "Only by mailing in a form"
+      ],
+      "correct_index": 0,
+      "reveal_title": "Same-day registration during early voting",
+      "trail_fact": "Bring proof of where you live, like a bill, bank statement or paycheck. Students can show a college document with their name and address, such as a housing portal screenshot. It isn't available on Election Day for most voters.",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 2,
+      "type": "multiple_choice",
+      "topic": "nepal",
+      "prompt": "During Tihar, the festival of lights, which animals get their own day of honour?",
+      "options": ["Crows, dogs and cows", "Cats, horses and goats", "Elephants and tigers", "Fish and parrots"],
+      "correct_index": 0,
+      "reveal_title": "Crows, dogs and cows",
+      "trail_fact": "Tihar lasts five days. It honours crows, dogs, cows and oxen, and ends with Bhai Tika, when sisters bless their brothers.",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 3,
+      "type": "multiple_choice",
+      "topic": "voting",
+      "prompt": "You get to the polls in North Carolina without an acceptable photo ID. What happens?",
+      "options": [
+        "I can still vote by filling out an ID Exception Form",
+        "I'm sent home and can't vote",
+        "I have to pay a fee to vote",
+        "I can only vote in the next election"
+      ],
+      "correct_index": 0,
+      "reveal_title": "You can still vote",
+      "trail_fact": "Every voter can vote with or without photo ID. Accepted IDs include an NC driver's license, a U.S. passport and approved college IDs. Check the list on ncsbe.gov.",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 3,
+      "type": "multiple_choice",
+      "topic": "nepal",
+      "prompt": "What makes Nepal's national flag different from every other country's?",
+      "options": ["It isn't a rectangle", "It's purple", "It's round", "It has no colours"],
+      "correct_index": 0,
+      "reveal_title": "It's two stacked triangles",
+      "trail_fact": "Nepal's flag is two crimson pennants with a blue border, showing the moon and the sun. It's the only national flag that isn't a rectangle.",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 3,
+      "type": "info_cards",
+      "topic": "voting",
+      "prompt": "A text from an unknown number says your polling place has moved. What do you trust?",
+      "options": [
+        "The Polling Place Search on ncsbe.gov",
+        "Reply to the text and ask for the new address",
+        "Go to last year's polling place anyway"
+      ],
+      "correct_index": 0,
+      "reveal_title": "Check it yourself on ncsbe.gov",
+      "trail_fact": "If something sounds off, look it up on an official site or call your county board of elections. Never trust a message just because it sounds urgent.",
+      "timer_seconds": 20
+    },
+    {
       "checkpoint": 4,
-      "order": 1,
+      "type": "multiple_choice",
+      "topic": "voting",
+      "prompt": "On Election Day in North Carolina, where do you vote?",
+      "options": [
+        "At my assigned polling place",
+        "At any early voting site in the state",
+        "At any polling place in my county",
+        "Online"
+      ],
+      "correct_index": 0,
+      "reveal_title": "Your assigned polling place",
+      "trail_fact": "During early voting you can go to any early voting site in your county. On Election Day you vote at your own polling place. Look it up on ncsbe.gov.",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 4,
+      "type": "multiple_choice",
+      "topic": "nepal",
+      "prompt": "Which ring-shaped sweet rice bread is a favourite at Tihar and Dashain?",
+      "options": ["Sel roti", "Dal bhat", "Gundruk", "Chatamari"],
+      "correct_index": 0,
+      "reveal_title": "Sel roti",
+      "trail_fact": "Sel roti is made from rice flour batter, sugar and ghee, fried in a ring. Families make it to share with neighbours and relatives at festival time.",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 4,
       "type": "final_scenario",
       "topic": "voting",
       "prompt": "One day left before the election. Explain your team's full plan: when you'll vote, how you'll get there, what you need to bring, and where you'll check for updates. Then give your backup plan.",
@@ -77,6 +196,16 @@
       "title": "Your planned trail is closed.",
       "body": "A rockslide blocked the route to the next camp, and the sun sets in four hours. What does your team do now?",
       "helpful_supply": "map"
+    },
+    {
+      "title": "Whiteout!",
+      "body": "A snowstorm rolls in and you can't see the trail. The weather is changing by the hour. How does your team stay safe and keep going?",
+      "helpful_supply": "radio"
+    },
+    {
+      "title": "A teammate is hurt.",
+      "body": "One climber twisted an ankle on the ice. You can't leave anyone behind. What's your plan to reach camp together?",
+      "helpful_supply": "kit"
     }
   ]
 }

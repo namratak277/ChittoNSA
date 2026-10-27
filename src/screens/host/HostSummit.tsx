@@ -54,7 +54,6 @@ export function HostSummit({ teams, onPlanVote }: HostSummitProps) {
             </li>
           ))}
         </ol>
-        <p className="text-[17px] text-body">Summit Champions win {settings.prize}</p>
       </div>
 
       <div className="absolute right-16 top-[260px] flex w-[300px] flex-col gap-2.5 rounded-[20px] border-[3px] border-ink bg-white p-5">
@@ -79,8 +78,8 @@ export function HostSummit({ teams, onPlanVote }: HostSummitProps) {
 
       <div className="absolute inset-x-16 bottom-7 flex items-center gap-4 rounded-[20px] bg-ink px-6 py-4 text-white">
         <p className="grow text-[22px] leading-snug">
-          <b>Your next summit: Election Day, {settings.electionDate}.</b> Check your registration at ncsbe.gov (other states: vote.gov). Register
-          by {settings.registrationDeadline}.
+          <b>Your next summit: Election Day, {settings.electionDate}.</b> Early voting: {settings.earlyVoting}. Check your registration at
+          ncsbe.gov (other states: vote.gov).
         </p>
         <button
           type="button"

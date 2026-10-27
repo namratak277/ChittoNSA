@@ -109,29 +109,41 @@ export function PlayerLive({ pin }: { pin?: Promise<string> }) {
   );
 }
 
+/** Teams in the open game with this PIN, or null if no game is open with it. */
+async function findTeams(pin: string): Promise<Team[] | null> {
+  const sb = getSupabase()!;
+  const { data: session } = await sb.from("sessions").select("id").eq("pin", pin).neq("state", "ENDED").maybeSingle();
+  if (!session) return null;
+  const { data } = await sb.from("teams").select("team_key, name").eq("session_id", session.id).order("position");
+  return ((data ?? []) as Pick<TeamRow, "team_key" | "name">[]).map(teamOf);
+}
+
 function JoinStep({ initialPin, onJoined }: { initialPin: string; onJoined: (me: Me) => void }) {
   const [teams, setTeams] = useState<Team[]>(teamsFor(5));
   const [pinNote, setPinNote] = useState<string | undefined>();
   const lookupId = useRef(0);
 
-  /** Shows the teams playing in the game with this PIN. */
-  async function lookup(digits: string) {
+  /** Looks up the teams playing in the game with this 6-digit PIN, then shows them (latest lookup wins). */
+  function lookup(digits: string) {
     const id = ++lookupId.current;
-    if (digits.length !== 6) return setPinNote(undefined);
-    const sb = getSupabase()!;
-    const { data: session } = await sb.from("sessions").select("id").eq("pin", digits).neq("state", "ENDED").maybeSingle();
-    if (id !== lookupId.current) return;
-    if (!session) return setPinNote("No game with that PIN is open. Check the big screen.");
-    const { data } = await sb.from("teams").select("team_key, name").eq("session_id", session.id).order("position");
-    if (id !== lookupId.current) return;
-    setPinNote(undefined);
-    if (data?.length) setTeams((data as Pick<TeamRow, "team_key" | "name">[]).map(teamOf));
+    findTeams(digits).then((found) => {
+      if (id !== lookupId.current) return;
+      setPinNote(found ? undefined : "No game with that PIN is open. Check the big screen.");
+      if (found?.length) setTeams(found);
+    });
   }
 
   // From the QR code the PIN is already filled in, so look it up straight away.
   useEffect(() => {
-    if (initialPin) lookup(initialPin.replace(/\D/g, ""));
-  }, [initialPin]); // eslint-disable-line react-hooks/exhaustive-deps
+    const digits = initialPin.replace(/\D/g, "");
+    if (digits.length === 6) lookup(digits);
+  }, [initialPin]);
+
+  function pinChanged(digits: string) {
+    if (digits.length === 6) return lookup(digits);
+    lookupId.current++; // drop any lookup still on its way back
+    setPinNote(undefined);
+  }
 
   async function join({ pin, nickname, team, style }: JoinDetails) {
     const { data, error } = await getSupabase()!.rpc("join_session", {
@@ -144,7 +156,7 @@ function JoinStep({ initialPin, onJoined }: { initialPin: string; onJoined: (me:
     onJoined(data as Me);
   }
 
-  return <PlayerJoin initialPin={initialPin} teams={teams} pinNote={pinNote} onPinChange={lookup} onJoin={join} />;
+  return <PlayerJoin initialPin={initialPin} teams={teams} pinNote={pinNote} onPinChange={pinChanged} onJoin={join} />;
 }
 
 function Joined({ me, onLeave }: { me: Me; onLeave: () => void }) {

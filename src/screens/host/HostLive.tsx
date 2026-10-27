@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { HostStage } from "@/components/layout/HostStage";
 import { ANSWER_SLOTS } from "@/lib/answers";
 import { CHECKPOINTS } from "@/lib/checkpoints";
 import { teamOf, type PublicQuestion, type QuestionRow, type SessionState, type StormCardRow } from "@/lib/db";
+import { clock } from "@/lib/format";
 import { afterFact, questionLabel, revealTitle, stageTeams } from "@/lib/stage";
 import { getSupabase } from "@/lib/supabase";
 import { SUPPLIES, suppliesCost } from "@/lib/supplies";
@@ -24,7 +25,7 @@ import { HostSupplies } from "./HostSupplies";
 import { Scorecard, type AwardReason } from "./Scorecard";
 
 /** How long the supply shop timer runs (the host closes the shop). */
-export const SHOP_SECONDS = 300;
+const SHOP_SECONDS = 300;
 
 type Lookup = { id: string } | "missing" | "not-yours" | null;
 type QuestionStep = Pick<QuestionRow, "id" | "checkpoint" | "position" | "prompt">;
@@ -32,13 +33,13 @@ type StormStep = Pick<StormCardRow, "id" | "position">;
 /** One stop in the night: a question, or the Storm Zone event. */
 type Step = { kind: "question"; id: string; checkpoint: number } | { kind: "storm"; id: string };
 interface AnswerRow {
+  question_id: string;
   team_id: string;
   option_index: number;
   correct: boolean;
 }
 
-/** m:ss */
-const clock = (s: number | null) => (s === null ? "–" : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`);
+const timeLeft = (s: number | null) => (s === null ? "–" : clock(s));
 
 function climbQuestion(q: PublicQuestion): ClimbQuestion {
   const fact = afterFact(q);
@@ -138,11 +139,39 @@ function Live({ pin, maker }: { pin: string; maker: Maker }) {
     if (!sessionId || !questionId || !buzzerQuestion) return;
     getSupabase()!
       .from("answers")
-      .select("team_id, option_index, correct")
+      .select("question_id, team_id, option_index, correct")
       .eq("session_id", sessionId)
       .eq("question_id", questionId)
       .then(({ data }) => setAnswers((data as AnswerRow[]) ?? []));
   }, [sessionId, questionId, buzzerQuestion, answeredKey]);
+
+  // The game runs itself between host clicks. Each automatic step happens once (keyed by question
+  // or buzzer turn) and waits a moment so a last-second tap still reaches the server.
+  const autoDone = useRef<string | null>(null);
+  const timedQuestion = state === "QUESTION" && !!q && q.mode !== "buzzer" && q.type !== "final_scenario";
+  const turnKey = buzzerQuestion ? `${questionId}:${q!.turn_started_at ?? "none"}` : null;
+  const turnRow = buzzerQuestion ? teams.find((t) => t.team_key === q!.turn_team) : undefined;
+  const turnPick = turnRow && answers.find((a) => a.question_id === questionId && a.team_id === turnRow.id);
+  const everyoneMissed = buzzerQuestion && !q!.turn_team && q!.missed.length > 0 && q!.missed.length >= teams.length;
+  let autoStep: { key: string; fn: "host_reveal" | "host_next_turn"; delay: number } | null = null;
+  if (timedQuestion && secondsLeft === 0) autoStep = { key: `reveal:${questionId}`, fn: "host_reveal", delay: 1000 };
+  // Buzzer mode: the server already knows if the pick is right, so show it briefly, then reveal or pass the turn.
+  else if (turnKey && turnPick) autoStep = { key: turnKey, fn: turnPick.correct ? "host_reveal" : "host_next_turn", delay: 2000 };
+  else if (turnKey && q!.turn_team && secondsLeft === 0) autoStep = { key: turnKey, fn: "host_next_turn", delay: 1000 };
+  else if (everyoneMissed) autoStep = { key: `reveal:${questionId}`, fn: "host_reveal", delay: 1000 };
+  const autoKey = autoStep?.key;
+  const autoFn = autoStep?.fn;
+  const autoDelay = autoStep?.delay;
+  useEffect(() => {
+    if (!sessionId || !autoKey || !autoFn || autoDone.current === autoKey) return;
+    const id = setTimeout(() => {
+      autoDone.current = autoKey;
+      getSupabase()!
+        .rpc(autoFn, { p_session: sessionId })
+        .then(({ error }) => error && setError(error.message));
+    }, autoDelay);
+    return () => clearTimeout(id);
+  }, [sessionId, autoKey, autoFn, autoDelay]);
 
   if (lookup === "missing")
     return (
@@ -221,8 +250,7 @@ function Live({ pin, maker }: { pin: string; maker: Maker }) {
   if (buzzerQuestion && q) {
     const byKey = (key: string) => stage.find((t) => t.team.id === key)!;
     const order = q.buzz.map(byKey).filter(Boolean);
-    const turnRow = teams.find((t) => t.team_key === q.turn_team);
-    const pick = turnRow && answers.find((a) => a.team_id === turnRow.id);
+    const pick = turnPick;
     buzzer = {
       order,
       turn: q.turn_team ? q.buzz.indexOf(q.turn_team) : -1,
@@ -260,7 +288,7 @@ function Live({ pin, maker }: { pin: string; maker: Maker }) {
         {session.state === "SUPPLY_SHOP" && (
           <HostSupplies
             teams={teams.map((t) => ({ team: teamOf(t), supplySpent: suppliesCost(t.supplies), packed: t.supplies_locked }))}
-            timeLeft={clock(secondsLeft)}
+            timeLeft={timeLeft(secondsLeft)}
             nextQuestion={questions.find((x) => x.id === firstQuestion?.id)?.prompt}
             onClose={() => plan[0] && goTo(plan[0])}
             busy={busy}
@@ -287,7 +315,7 @@ function Live({ pin, maker }: { pin: string; maker: Maker }) {
             cardNumber={card.number}
             cardTotal={card.total}
             teams={scoreTeams}
-            timeLeft={clock(secondsLeft)}
+            timeLeft={timeLeft(secondsLeft)}
             supplyNote={supplyNote}
             awarded={awarded}
             onAward={award}

@@ -3,7 +3,7 @@
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { PrayerFlagBunting } from "@/components/brand/PrayerFlagBunting";
-import { DEBRIEF_QUESTIONS } from "@/lib/demo";
+import { DEBRIEF_QUESTIONS } from "@/lib/checkpoints";
 import { LOCAL, OFFICIAL_LINKS } from "@/lib/settings";
 import { useSettings } from "@/lib/useSettings";
 
@@ -78,20 +78,22 @@ export function HostPledge({ plansMade, climbers, onEnd }: HostPledgeProps) {
         >
           <div className="h-full bg-flag-green transition-[width] duration-500" style={{ width: `${pct}%` }} />
         </div>
-        <p className="border-t-2 border-dashed border-rule pt-1.5 text-base leading-relaxed">
+        <p className="border-t-2 border-dashed border-rule pt-1.5 text-[15px] leading-snug">
           Official info, always:
           <br />
           <b>ncsbe.gov</b> (NC registration, polling places, early voting; {LOCAL.city} votes in {LOCAL.county})
           <br />
           <b>vote.gov</b> (registered in another state)
         </p>
-        <p className="text-base">
+        <p className="text-[15px] leading-snug">
           Election Day: <b>{settings.electionDate}</b>
           <br />
-          Register by: <b>{settings.registrationDeadline}</b>
+          Early voting: <b>{settings.earlyVoting}</b>
+          <br />
+          Missed the {settings.registrationDeadline} deadline? Register same-day at early voting.
         </p>
         <div className="flex flex-col items-center gap-1 self-center">
-          <QRCodeSVG value={OFFICIAL_LINKS.ncsbeVoting.href} size={110} fgColor="#1E1B2E" title="Scan for NC voting info on ncsbe.gov" />
+          <QRCodeSVG value={OFFICIAL_LINKS.ncsbeVoting.href} size={92} fgColor="#1E1B2E" title="Scan for NC voting info on ncsbe.gov" />
           <span className="text-sm text-body">Scan for NC voting info · ncsbe.gov</span>
         </div>
         <button type="button" onClick={onEnd} className="min-h-12 cursor-pointer rounded-[14px] border-0 bg-flag-red text-lg font-extrabold text-white">

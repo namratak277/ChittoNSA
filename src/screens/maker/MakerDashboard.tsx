@@ -107,11 +107,20 @@ function Dashboard({ maker }: { maker: Maker }) {
     setCreating(true);
     setError(null);
     try {
-      router.push(`/maker/games/${await createSeededGame("New game")}`);
+      router.push(`/maker/games/${await createSeededGame(seed.game.title, seed.game.default_mode as Mode)}`);
     } catch (e) {
       setError((e as Error).message);
       setCreating(false);
     }
+  }
+
+  // Questions, storm cards and past game nights go with it (the database cascades the delete).
+  async function deleteGame(game: GameCard) {
+    if (!confirm(`Delete "${game.title}"? Its questions and past game-night results are deleted too.`)) return;
+    setError(null);
+    const { error } = await getSupabase()!.from("games").delete().eq("id", game.id);
+    if (error) return setError(error.message);
+    setGames((gs) => gs?.filter((g) => g.id !== game.id) ?? null);
   }
 
   return (
@@ -141,6 +150,12 @@ function Dashboard({ maker }: { maker: Maker }) {
       )}
 
       {games === null && !error && <p className="text-body">Loading your games…</p>}
+
+      {games?.length === 0 && (
+        <p className="rounded-2xl border-2 border-dashed border-[#8A86A0] bg-white px-6 py-8 text-center text-lg text-body">
+          No games yet. Press <b>New game</b> to make {seed.game.title} with every question ready to play.
+        </p>
+      )}
 
       {games && games.length > 0 && (
         <ul className="grid gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
@@ -175,6 +190,13 @@ function Dashboard({ maker }: { maker: Maker }) {
                     </Link>
                   )}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => deleteGame(g)}
+                  className="min-h-11 cursor-pointer self-start rounded-[10px] px-1 text-[15px] font-bold text-flag-red underline"
+                >
+                  Delete game
+                </button>
               </li>
             );
           })}

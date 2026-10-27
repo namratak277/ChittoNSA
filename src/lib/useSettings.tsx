@@ -10,9 +10,9 @@ export type SettingKey = keyof Settings;
 export const SETTING_FIELDS: { key: SettingKey; label: string; hint: string }[] = [
   { key: "clubName", label: "Club name", hint: "Shown on screens and your account" },
   { key: "gameUrl", label: "Game address", hint: "Short link players type, e.g. chhito.vercel.app/play" },
-  { key: "prize", label: "Prize", hint: "What Summit Champions win" },
-  { key: "registrationDeadline", label: "NC registration deadline", hint: "Copy it from ncsbe.gov" },
-  { key: "electionDate", label: "Election date", hint: "Copy it from ncsbe.gov" },
+  { key: "registrationDeadline", label: "NC registration deadline", hint: "Set from ncsbe.gov for Nov. 3, 2026" },
+  { key: "earlyVoting", label: "Early voting dates", hint: "Set from ncsbe.gov for Nov. 3, 2026" },
+  { key: "electionDate", label: "Election date", hint: "Set from ncsbe.gov for Nov. 3, 2026" },
   { key: "clubInstagram", label: "Club Instagram", hint: "e.g. @yourclub" },
   { key: "team6Name", label: "6th team name", hint: "Only used with 6 teams" },
 ];

@@ -4,7 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useState, useSyncExternalStore } from "react";
 import { PrayerFlagBunting } from "@/components/brand/PrayerFlagBunting";
 import { FLAG, INK } from "@/lib/colors";
-import { formatPin } from "@/lib/demo";
+import { formatPin } from "@/lib/format";
 import type { Team } from "@/lib/teams";
 import { useSettings } from "@/lib/useSettings";
 
@@ -41,7 +41,7 @@ const RULES = [
   {
     tab: "Summit",
     title: "From the summit to the ballot",
-    body: "The team with the most points becomes Summit Champions and wins {prize}. Then everyone makes their own voting plan. You planned your climb, now plan your vote.",
+    body: "The team with the most points becomes Summit Champions. Then everyone makes their own voting plan. You planned your climb, now plan your vote.",
     color: INK,
   },
 ];
@@ -111,7 +111,7 @@ export function HostLobby({ pin, teams, onStart, starting = false }: HostLobbyPr
           </div>
           <div className="flex flex-col gap-1.5">
             <p className="text-[28px] font-extrabold leading-tight">{rule.title}</p>
-            <p className="text-xl leading-snug text-body">{rule.body.replace("{prize}", settings.prize).replace("{teams}", teamList)}</p>
+            <p className="text-xl leading-snug text-body">{rule.body.replace("{teams}", teamList)}</p>
           </div>
         </div>
         <div className="flex gap-3">

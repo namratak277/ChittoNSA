@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SignpostPost } from "@/components/answers/SignpostPost";
 import { ANSWER_SLOTS } from "@/lib/answers";
 import { FLAG, INK } from "@/lib/colors";
+import { ordinal } from "@/lib/format";
 import { Eyebrow } from "./parts";
 
 // Traditional order: sky, air, fire, water, earth.
@@ -16,8 +17,6 @@ const ORDER = [
 ];
 const SHUFFLED = [4, 2, 0, 1, 3];
 const FRINGE = "polygon(0 0, 100% 0, 100% 86%, 75% 100%, 50% 86%, 25% 100%, 0 86%)";
-
-const ordinal = (n: number) => `${n}${({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n] ?? "th"}`;
 
 export type BuzzerStatus =
   | { kind: "puzzle" }

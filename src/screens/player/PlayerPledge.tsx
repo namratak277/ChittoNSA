@@ -159,7 +159,11 @@ export function PlayerPledge({ onPlanMade }: PlayerPledgeProps) {
               Updates from: <b>{where}</b>
             </p>
             <p className="text-[15px] text-[#3A3550]">
-              Election Day: <b>{settings.electionDate}</b> · Register by: <b>{settings.registrationDeadline}</b>
+              Election Day: <b>{settings.electionDate}</b>
+              <br />
+              Early voting: <b>{settings.earlyVoting}</b>
+              <br />
+              Register by: <b>{settings.registrationDeadline}</b>. Missed it? You can register and vote the same day at an early voting site.
             </p>
             <p className="text-[15px] text-[#3A3550]">Saved on this phone only. Take a screenshot so you have it on Election Day.</p>
           </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getSupabase } from "./supabase";
 
 /** Postgres gives microseconds; trim to milliseconds so every browser parses it. */
-export const parseTime = (iso: string) => new Date(iso.replace(/(\.\d{3})\d+/, "$1")).getTime();
+const parseTime = (iso: string) => new Date(iso.replace(/(\.\d{3})\d+/, "$1")).getTime();
 
 // Phone clocks can be off by seconds, so measure the gap to the server clock once per page load.
 let offset: Promise<number> | null = null;

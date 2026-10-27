@@ -120,8 +120,9 @@ export function HostClimb({ phase, question, teams, buzzer, scorecard, gained = 
               disabled={busy}
               className="min-h-11 w-full cursor-pointer rounded-xl border-0 bg-ink text-[17px] font-extrabold text-white disabled:opacity-60"
             >
-              {talkItThrough ? "Done talking" : "Reveal answer"}
+              {talkItThrough ? "Done talking" : "Reveal now"}
             </button>
+            {!talkItThrough && <p className="text-center text-[13px] leading-snug text-body">The answer shows by itself when time runs out.</p>}
           </div>
           {talkItThrough && scorecard ? <div className="absolute right-10 top-[130px] w-[486px]">{scorecard}</div> : <TeamPoints teams={teams} />}
         </>
@@ -134,19 +135,23 @@ export function HostClimb({ phase, question, teams, buzzer, scorecard, gained = 
             <p className="text-lg leading-snug">{question.trailFact}</p>
           </div>
           <div className={`${panel} right-10 top-[150px] w-[250px] gap-2 p-[18px]`}>
-            <p className="text-xl font-extrabold">Points this round</p>
-            <ul className="flex flex-col gap-1">
-              {ranked(teams).map(({ team }) => {
+            <p className="text-xl font-extrabold">Leaderboard</p>
+            <ol className="flex flex-col gap-1">
+              {ranked(teams).map(({ team, points }, i) => {
                 const pts = gained[team.id] ?? 0;
                 return (
-                  <li key={team.id} className="flex justify-between gap-2 text-base">
-                    <span>{team.name}</span>
-                    <span className={pts > 0 ? "font-bold text-flag-green-dark" : ""}>+{pts}</span>
+                  <li key={team.id} className="flex items-baseline gap-2 text-base">
+                    <b className="w-4 shrink-0">{i + 1}</b>
+                    <span className="grow leading-tight">{team.name}</span>
+                    <b>{points}</b>
+                    <span className={`w-9 shrink-0 text-right text-sm ${pts > 0 ? "font-bold text-flag-green-dark" : "text-body"}`}>+{pts}</span>
                   </li>
                 );
               })}
-            </ul>
-            <p className="text-[13px] leading-snug text-body">A miss costs nothing. Every team keeps climbing.</p>
+            </ol>
+            <p className="text-[13px] leading-snug text-body">
+              {talkItThrough ? "A miss costs nothing. Every team keeps climbing." : "+10 for a right answer, up to +5 more for answering fast. A miss costs nothing."}
+            </p>
             <div className="mt-2 flex flex-col gap-2">
               {next.map((action, i) => (
                 <button

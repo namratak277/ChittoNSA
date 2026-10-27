@@ -53,6 +53,15 @@ export const CHECKPOINTS: readonly Checkpoint[] = [
   },
 ];
 
+/** Talked through at the Summit, after everyone makes a voting plan. */
+export const DEBRIEF_QUESTIONS = [
+  "What was the biggest challenge your team faced?",
+  "Did your original plan change? How did you adapt?",
+  "What happened when your team relied on information you couldn’t trust?",
+  "How is preparing to vote like preparing for a hard journey?",
+  "What’s one step you can take this week to get ready to vote?",
+];
+
 /**
  * Point on the trail for a progress value from 0 (Base Camp) to 4 (Summit).
  * Fractional values fall between stops, so markers follow the trail when they move.

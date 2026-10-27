@@ -1,5 +1,6 @@
 import { FLAG, INK } from "@/lib/colors";
 import type { PublicCard } from "@/lib/db";
+import { clock as formatClock } from "@/lib/format";
 import { SUPPLIES, type SupplyId } from "@/lib/supplies";
 import { Eyebrow } from "./parts";
 
@@ -14,7 +15,7 @@ interface PlayerStormProps {
 export function PlayerStorm({ card, supplies, secondsLeft }: PlayerStormProps) {
   const helpful = card.helpful_supply ? SUPPLIES.find((s) => s.id === card.helpful_supply) : undefined;
   const packedIt = helpful && supplies.includes(helpful.id);
-  const clock = secondsLeft === null ? null : `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, "0")}`;
+  const clock = secondsLeft === null ? null : formatClock(secondsLeft);
 
   return (
     <>

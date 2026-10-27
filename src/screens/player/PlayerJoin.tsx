@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ClimberMarker, type ClimberStyle } from "@/components/climbers/ClimberMarker";
+import { formatPin } from "@/lib/format";
 import type { Team } from "@/lib/teams";
 
 export interface JoinDetails {
@@ -70,7 +71,7 @@ export function PlayerJoin({ initialPin, teams, onPinChange, pinNote, onJoin }: 
       {!showPin && (
         <div className="flex items-center justify-between gap-3 rounded-[14px] border-2 border-ink bg-white px-4 py-2">
           <p className="text-[17px]">
-            Joining game <b className="tracking-[2px]">{pin.replace(/\D/g, "").replace(/^(\d{3})(\d{3})$/, "$1 $2")}</b>
+            Joining game <b className="tracking-[2px]">{formatPin(pin)}</b>
           </p>
           <button type="button" onClick={() => setEditPin(true)} className="min-h-11 cursor-pointer px-1 text-base font-bold text-flag-blue underline">
             Change

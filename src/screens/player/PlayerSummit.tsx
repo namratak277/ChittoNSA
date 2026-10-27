@@ -2,6 +2,7 @@
 
 import { ClimberMarker, type ClimberStyle } from "@/components/climbers/ClimberMarker";
 import { FLAG, GLACIER, INK } from "@/lib/colors";
+import { ordinal } from "@/lib/format";
 import { NC_VOTING_LINKS, OFFICIAL_LINKS } from "@/lib/settings";
 import type { Team } from "@/lib/teams";
 import { useSettings } from "@/lib/useSettings";
@@ -16,12 +17,6 @@ interface PlayerSummitProps {
   questionCount: number;
   teamBestStreak: number;
   planMade: boolean;
-}
-
-function ordinal(n: number) {
-  const teen = n % 100 >= 11 && n % 100 <= 13;
-  const suffix = teen ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th";
-  return `${n}${suffix}`;
 }
 
 /** Final team rank on the phone (design-reference/Phone-Summit.dc.html). */
@@ -72,7 +67,11 @@ export function PlayerSummit({ team, style, place, points, teamCorrect, question
       </dl>
       <div className="flex flex-col gap-2.5 rounded-[18px] border-[3px] border-ink bg-white p-4">
         <p className="text-xl font-extrabold">Your next summit: Election Day</p>
-        <p className="text-[15px] text-body">Election Day: {settings.electionDate}</p>
+        <p className="text-[15px] text-body">
+          Election Day: {settings.electionDate}
+          <br />
+          Early voting: {settings.earlyVoting}
+        </p>
         <a
           href={NC_VOTING_LINKS[0].href}
           target="_blank"

@@ -1,13 +1,13 @@
 import seed from "../../content/seed.json";
 
-// Values the host fills in. They stay as [PLACEHOLDERS] until set; never invent them.
+// Defaults the host can change in Host setup. Election details come from ncsbe.gov (content/seed.json).
 const p = seed.placeholders;
 
 export const SETTINGS = {
   clubName: p["CLUB NAME"],
   gameUrl: p["GAME URL"],
-  prize: p["PRIZE"],
   registrationDeadline: p["NC REGISTRATION DEADLINE"],
+  earlyVoting: p["EARLY VOTING"],
   electionDate: p["ELECTION DATE"],
   clubInstagram: p["CLUB INSTAGRAM"],
   team6Name: p["TEAM 6 NAME"],
