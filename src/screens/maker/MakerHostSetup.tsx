@@ -1,9 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { DEMO_PIN, formatPin } from "@/lib/demo";
-import { MAKER, MakerTopBarShell } from "./MakerShell";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { getSupabase } from "@/lib/supabase";
+import { teamsFor, type TeamCount } from "@/lib/teams";
+import type { Maker } from "@/lib/useMaker";
+import { MakerGate } from "./MakerGate";
+import { MakerTopBarShell } from "./MakerShell";
 
 type Mode = "buttons" | "buzzer";
 
@@ -29,14 +32,87 @@ const MODES = [
 const select = "h-[46px] rounded-[10px] border-2 border-ink bg-white px-2.5 text-base";
 
 /** Host setup: mode, timer, teams → Open Base Camp (design-reference/Maker-Host.dc.html). */
-export function MakerHostSetup({ title }: { title: string }) {
-  const [mode, setMode] = useState<Mode>("buttons");
+export function MakerHostSetup({ gameId }: { gameId: Promise<string> }) {
+  const id = use(gameId);
+  return <MakerGate>{(maker) => <HostSetup id={id} maker={maker} />}</MakerGate>;
+}
+
+// Buttons mode: 0 means each question uses the timer set in the builder.
+const DEFAULT_TIMER: Record<Mode, number> = { buttons: 0, buzzer: 10 };
+
+/** Random 6-digit PIN that never starts with 0, so it reads well on the projector. */
+function makePin() {
+  const n = crypto.getRandomValues(new Uint32Array(1))[0] % 900000;
+  return String(100000 + n);
+}
+
+function HostSetup({ id, maker }: { id: string; maker: Maker }) {
+  const router = useRouter();
+  const [title, setTitle] = useState("…");
+  const [found, setFound] = useState(true);
+  const [mode, setModeState] = useState<Mode>("buttons");
+  const [timer, setTimer] = useState(DEFAULT_TIMER.buttons);
   const [teams, setTeams] = useState("5");
+  const [opening, setOpening] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const buttons = mode === "buttons";
   const modeName = buttons ? "Buttons mode" : "Buzzer mode";
 
+  const setMode = (m: Mode) => {
+    setModeState(m);
+    setTimer(DEFAULT_TIMER[m]);
+  };
+
+  useEffect(() => {
+    getSupabase()!
+      .from("games")
+      .select("title, default_mode")
+      .eq("id", id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) {
+          setFound(false);
+          setTitle("Game not found");
+          return;
+        }
+        setTitle(data.title);
+        setModeState(data.default_mode);
+        setTimer(DEFAULT_TIMER[data.default_mode as Mode]);
+      });
+  }, [id]);
+
+  /** Makes the live session with a fresh PIN and its teams, then opens the projector. */
+  async function openBaseCamp() {
+    const sb = getSupabase()!;
+    setOpening(true);
+    setError(null);
+    // One live game per maker: close any earlier session that was left open.
+    await sb.from("sessions").update({ state: "ENDED" }).eq("maker_id", maker.id).neq("state", "ENDED");
+    const teamCount = Number(teams) as TeamCount;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { data, error } = await sb
+        .from("sessions")
+        .insert({ game_id: id, pin: makePin(), mode, timer_seconds: timer, team_count: teamCount })
+        .select("id, pin")
+        .single();
+      if (error?.code === "23505") continue; // PIN already live, try another
+      if (error) break;
+      const rows = teamsFor(teamCount).map((t, i) => ({ session_id: data.id, team_key: t.id, name: t.name, position: i }));
+      const t = await sb.from("teams").insert(rows);
+      if (t.error) {
+        setError(t.error.message);
+        setOpening(false);
+        return;
+      }
+      router.push(`/host/${data.pin}`);
+      return;
+    }
+    setError("Couldn't open Base Camp. Check your connection and try again.");
+    setOpening(false);
+  }
+
   return (
-    <MakerTopBarShell title={`Host: ${title}`} actions={<span className="text-[15px] text-[#B9B5C9]">Signed in as {MAKER.name}</span>}>
+    <MakerTopBarShell title={`Host: ${title}`} actions={<span className="text-[15px] text-[#B9B5C9]">Signed in as {maker.name}</span>}>
       <div className="flex grow flex-col gap-7 px-8 py-7 lg:flex-row">
         <div className="flex min-w-0 grow flex-col gap-4">
           <h2 className="text-[32px] font-extrabold leading-tight">How should people play tonight?</h2>
@@ -66,10 +142,10 @@ export function MakerHostSetup({ title }: { title: string }) {
               <label htmlFor="htimer" className="text-sm font-extrabold">
                 {buttons ? "Answer timer" : "Time to answer after buzzing"}
               </label>
-              <select id="htimer" key={mode} defaultValue={buttons ? "20" : "10"} className={select}>
-                {(buttons ? [10, 20, 30] : [5, 10, 15]).map((s) => (
+              <select id="htimer" value={timer} onChange={(e) => setTimer(Number(e.target.value))} className={select}>
+                {(buttons ? [0, 10, 20, 30] : [5, 10, 15]).map((s) => (
                   <option key={s} value={s}>
-                    {buttons ? `${s} seconds` : `${s} seconds each`}
+                    {s === 0 ? "Each question's own timer" : buttons ? `${s} seconds for every question` : `${s} seconds each`}
                   </option>
                 ))}
               </select>
@@ -105,12 +181,23 @@ export function MakerHostSetup({ title }: { title: string }) {
             Players: phones, no account
           </p>
           <div className="rounded-[14px] bg-maker p-3.5 text-center">
-            <p className="text-sm text-body">Game PIN (made when you open)</p>
-            <p className="text-[40px] font-extrabold leading-tight tracking-[4px]">{formatPin(DEMO_PIN)}</p>
+            <p className="text-sm text-body">Game PIN</p>
+            <p className="text-[22px] font-extrabold leading-tight">Made when you open</p>
           </div>
-          <Link href={`/host/${DEMO_PIN}`} className="flex min-h-14 items-center justify-center rounded-[14px] bg-flag-red text-xl font-extrabold text-white no-underline">
-            Open Base Camp
-          </Link>
+          {error && (
+            <p role="alert" className="text-base font-bold text-flag-red">
+              {error}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={openBaseCamp}
+            disabled={opening || !found}
+            className="flex min-h-14 cursor-pointer items-center justify-center rounded-[14px] border-0 bg-flag-red text-xl font-extrabold text-white disabled:cursor-default disabled:opacity-60"
+          >
+            {opening ? "Opening…" : "Open Base Camp"}
+          </button>
+          <p className="text-sm leading-snug text-body">Opening a new game closes any game you left open before.</p>
           <p className="text-sm leading-snug text-body">
             Host controls: Start · Reveal · Next checkpoint · Storm card · Award points · Voting plan · End
           </p>

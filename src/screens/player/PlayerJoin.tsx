@@ -13,28 +13,38 @@ export interface JoinDetails {
 
 interface PlayerJoinProps {
   initialPin: string;
+  /** Teams playing in the game with this PIN (or the default five before it's found). */
   teams: Team[];
-  onJoin: (details: JoinDetails) => void;
+  /** Called with the PIN digits as they're typed, so the teams can be looked up. */
+  onPinChange?: (digits: string) => void;
+  /** Note under the PIN, e.g. "No game with that PIN". */
+  pinNote?: string;
+  /** Resolves to an error message if joining failed. */
+  onJoin: (details: JoinDetails) => Promise<string | void> | void;
 }
 
 const inputClass = "h-14 w-full rounded-[14px] border-[3px] border-ink bg-white px-4";
 
 /** Join with PIN, nickname, team flag colour and climber (design-reference/C-Phone.dc.html). */
-export function PlayerJoin({ initialPin, teams, onJoin }: PlayerJoinProps) {
+export function PlayerJoin({ initialPin, teams, onPinChange, pinNote, onJoin }: PlayerJoinProps) {
   const [pin, setPin] = useState(initialPin);
   const [nickname, setNickname] = useState("");
   const [teamIndex, setTeamIndex] = useState(0);
   const [style, setStyle] = useState<ClimberStyle>("topi");
   const [error, setError] = useState("");
-  const team = teams[teamIndex];
+  const [busy, setBusy] = useState(false);
+  const team = teams[Math.min(teamIndex, teams.length - 1)];
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     const digits = pin.replace(/\D/g, "");
     if (digits.length !== 6) return setError("The game PIN has 6 numbers. Check the big screen.");
     if (!nickname.trim()) return setError("Pick a nickname so your team knows it's you.");
     setError("");
-    onJoin({ pin: digits, nickname: nickname.trim(), team, style });
+    setBusy(true);
+    const failed = await onJoin({ pin: digits, nickname: nickname.trim(), team, style });
+    setBusy(false);
+    if (failed) setError(failed);
   }
 
   return (
@@ -62,9 +72,18 @@ export function PlayerJoin({ initialPin, teams, onJoin }: PlayerJoinProps) {
           autoComplete="off"
           maxLength={7}
           value={pin}
-          onChange={(e) => setPin(e.target.value)}
+          onChange={(e) => {
+            setPin(e.target.value);
+            onPinChange?.(e.target.value.replace(/\D/g, ""));
+          }}
+          aria-describedby={pinNote ? "pin-note" : undefined}
           className={`${inputClass} text-[26px] font-extrabold tracking-[3px]`}
         />
+        {pinNote && (
+          <p id="pin-note" className="text-[15px] font-bold text-danger">
+            {pinNote}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -89,15 +108,15 @@ export function PlayerJoin({ initialPin, teams, onJoin }: PlayerJoinProps) {
             <button
               key={t.id}
               type="button"
-              aria-pressed={i === teamIndex}
+              aria-pressed={t.id === team.id}
               aria-label={`${t.name}, ${t.id} flag`}
               onClick={() => setTeamIndex(i)}
               className={`flex size-12 cursor-pointer items-center justify-center rounded-xl text-xl font-extrabold ${
-                i === teamIndex ? "border-4 border-ink" : "border-2 border-ink"
+                t.id === team.id ? "border-4 border-ink" : "border-2 border-ink"
               }`}
               style={{ background: t.color, color: t.topiPattern }}
             >
-              {i === teamIndex ? "✓" : ""}
+              {t.id === team.id ? "✓" : ""}
             </button>
           ))}
         </div>
@@ -130,8 +149,12 @@ export function PlayerJoin({ initialPin, teams, onJoin }: PlayerJoinProps) {
       <p role="alert" className="min-h-5 text-[15px] font-bold text-danger">
         {error}
       </p>
-      <button type="submit" className="mt-auto min-h-[60px] cursor-pointer rounded-2xl border-0 bg-flag-red text-2xl font-extrabold text-white">
-        Join game
+      <button
+        type="submit"
+        disabled={busy}
+        className="mt-auto min-h-[60px] cursor-pointer rounded-2xl border-0 bg-flag-red text-2xl font-extrabold text-white disabled:opacity-60"
+      >
+        {busy ? "Joining…" : "Join game"}
       </button>
     </form>
   );

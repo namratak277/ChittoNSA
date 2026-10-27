@@ -1,78 +1,137 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FLAG } from "@/lib/colors";
+import { isWritten, seedContent, type GameRow, type Mode, type QuestionRow } from "@/lib/db";
+import { getSupabase } from "@/lib/supabase";
+import type { Maker } from "@/lib/useMaker";
+import { MakerGate } from "./MakerGate";
 import { MakerSidebarShell } from "./MakerShell";
 
-// Fake saved games until the database lands in milestone 3.
-const GAMES = [
-  { id: "demo", title: "Dashain & Democracy Night", meta: "12 questions · Nepal + voting · last hosted [DATE]", mode: "Buttons mode", modeBg: "#DBE6FF", stripe: FLAG.blue, draft: false },
-  { id: "finals", title: "Nepal Culture Finals", meta: "10 questions · culture · never hosted", mode: "Buzzer mode", modeBg: "#FDE2E2", stripe: FLAG.red, draft: false },
-  { id: "warmup", title: "Voting 101 Warm-up", meta: "6 of 8 questions written · draft", mode: "Draft", modeBg: "#EEECF4", stripe: FLAG.yellow, draft: true },
-];
+type GameCard = Pick<GameRow, "id" | "title" | "default_mode" | "updated_at"> & {
+  questions: Pick<QuestionRow, "type" | "prompt" | "options" | "correct_index">[];
+};
 
-const LAST_NIGHT = { climbers: 41, plans: 28, rightPct: 74, winner: "Summit Seekers" };
+const STRIPES = [FLAG.blue, FLAG.red, FLAG.greenDark, FLAG.yellow];
+const MODE_CHIP: Record<Mode, { label: string; bg: string }> = {
+  buttons: { label: "Buttons mode", bg: "#DBE6FF" },
+  buzzer: { label: "Buzzer mode", bg: "#FDE2E2" },
+};
 
 const action = "flex min-h-11 grow items-center justify-center rounded-[10px] text-base no-underline";
 
 /** My games (design-reference/Maker-Dashboard.dc.html). */
 export function MakerDashboard() {
+  return <MakerGate>{(maker) => <Dashboard maker={maker} />}</MakerGate>;
+}
+
+function Dashboard({ maker }: { maker: Maker }) {
+  const router = useRouter();
+  const [games, setGames] = useState<GameCard[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    getSupabase()!
+      .from("games")
+      .select("id, title, default_mode, updated_at, questions(type, prompt, options, correct_index)")
+      .order("updated_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) setError(error.message);
+        else setGames(data as GameCard[]);
+      });
+  }, []);
+
+  async function newGame() {
+    const sb = getSupabase()!;
+    setCreating(true);
+    setError(null);
+    const { data, error } = await sb.from("games").insert({ title: "New game" }).select("id").single();
+    if (error) {
+      setError(error.message);
+      setCreating(false);
+      return;
+    }
+    const { questions, stormCards } = seedContent(data.id);
+    const [q, s] = await Promise.all([sb.from("questions").insert(questions), sb.from("storm_cards").insert(stormCards)]);
+    if (q.error || s.error) setError((q.error ?? s.error)!.message);
+    router.push(`/maker/games/${data.id}`);
+  }
+
   return (
-    <MakerSidebarShell current="games">
+    <MakerSidebarShell maker={maker} current="games">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold leading-tight">My games</h1>
           <p className="text-[17px] text-body">Only you can edit these. Players join with the PIN when you host.</p>
         </div>
-        <Link href="/maker/games/new" className="flex min-h-12 items-center gap-2 rounded-xl bg-flag-red px-[22px] text-lg font-extrabold text-white no-underline">
+        <button
+          type="button"
+          onClick={newGame}
+          disabled={creating}
+          className="flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border-0 bg-flag-red px-[22px] text-lg font-extrabold text-white disabled:opacity-60"
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
             <path d="M12 4 V20 M4 12 H20" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" />
           </svg>
-          New game
-        </Link>
+          {creating ? "Making…" : "New game"}
+        </button>
       </div>
 
-      <ul className="grid gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
-        {GAMES.map((g) => (
-          <li
-            key={g.id}
-            className={`flex flex-col gap-2 rounded-2xl bg-white p-[18px] ${g.draft ? "border-2 border-dashed border-[#8A86A0]" : "border-2 border-ink"}`}
-          >
-            <div className="h-2 rounded" style={{ background: g.stripe }} aria-hidden />
-            <h2 className="text-[21px] font-extrabold leading-tight">{g.title}</h2>
-            <p className="text-[15px] text-body">{g.meta}</p>
-            <p>
-              <span className="rounded-full px-2.5 py-0.5 text-sm font-bold" style={{ background: g.modeBg }}>
-                {g.mode}
-              </span>
-            </p>
-            <div className="mt-1.5 flex gap-2">
-              <Link href={`/maker/games/${g.id}`} className={`${action} border-2 border-ink font-bold text-ink`}>
-                {g.draft ? "Keep writing" : "Edit"}
-              </Link>
-              {!g.draft && (
-                <Link href={`/maker/games/${g.id}/host`} className={`${action} bg-ink font-extrabold text-white`}>
-                  Host
-                </Link>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+      {error && (
+        <p role="alert" className="rounded-xl border-2 border-flag-red bg-white px-4 py-3 font-bold text-flag-red">
+          {error}
+        </p>
+      )}
 
-      <section aria-label="Last game night" className="flex flex-wrap items-center gap-x-10 gap-y-3 rounded-2xl border-2 border-ink bg-white px-[22px] py-[18px]">
-        <h2 className="text-xl font-extrabold">Last game night</h2>
-        <p className="text-[17px]">
-          <b className="text-[26px]">{LAST_NIGHT.climbers}</b> climbers
+      {games === null && !error && <p className="text-body">Loading your games…</p>}
+
+      {games?.length === 0 && (
+        <p className="rounded-2xl border-2 border-dashed border-[#8A86A0] bg-white px-6 py-8 text-center text-lg text-body">
+          No games yet. Press <b>New game</b> to start with the sample Dashain question and storm card.
         </p>
-        <p className="text-[17px]">
-          <b className="text-[26px]">{LAST_NIGHT.plans}</b> voting plans made
-        </p>
-        <p className="text-[17px]">
-          <b className="text-[26px]">{LAST_NIGHT.rightPct}%</b> right answers
-        </p>
-        <p className="text-[17px]">
-          Summit Champions: <b>{LAST_NIGHT.winner}</b>
-        </p>
-      </section>
+      )}
+
+      {games && games.length > 0 && (
+        <ul className="grid gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
+          {games.map((g, i) => {
+            const written = g.questions.filter(isWritten).length;
+            const total = g.questions.length;
+            const draft = total === 0 || written < total;
+            const chip = draft ? { label: "Draft", bg: "#EEECF4" } : MODE_CHIP[g.default_mode];
+            const edited = new Date(g.updated_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+            return (
+              <li
+                key={g.id}
+                className={`flex flex-col gap-2 rounded-2xl bg-white p-[18px] ${draft ? "border-2 border-dashed border-[#8A86A0]" : "border-2 border-ink"}`}
+              >
+                <div className="h-2 rounded" style={{ background: STRIPES[i % STRIPES.length] }} aria-hidden />
+                <h2 className="text-[21px] font-extrabold leading-tight">{g.title}</h2>
+                <p className="text-[15px] text-body">
+                  {draft ? `${written} of ${total} questions written · draft` : `${total} questions`} · edited {edited}
+                </p>
+                <p>
+                  <span className="rounded-full px-2.5 py-0.5 text-sm font-bold" style={{ background: chip.bg }}>
+                    {chip.label}
+                  </span>
+                </p>
+                <div className="mt-1.5 flex gap-2">
+                  <Link href={`/maker/games/${g.id}`} className={`${action} border-2 border-ink font-bold text-ink`}>
+                    {draft ? "Keep writing" : "Edit"}
+                  </Link>
+                  {!draft && (
+                    <Link href={`/maker/games/${g.id}/host`} className={`${action} bg-ink font-extrabold text-white`}>
+                      Host
+                    </Link>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </MakerSidebarShell>
   );
 }

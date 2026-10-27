@@ -1,16 +1,65 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { GLACIER } from "@/lib/colors";
 import { SETTINGS } from "@/lib/settings";
+import { getSupabase } from "@/lib/supabase";
 import { PRAYER_FLAG_ORDER } from "@/lib/teams";
 
 const field = "h-12 w-full rounded-xl border-2 border-ink bg-white px-3.5 text-[17px]";
+const NOT_CONNECTED = "Supabase isn't connected yet. Add the keys to .env.local and restart the dev server.";
 
-/** Sign in / create account for game makers (design-reference/Maker-SignIn.dc.html). Auth arrives in milestone 3. */
+/** Sign in / create account for game makers (design-reference/Maker-SignIn.dc.html). */
 export function MakerSignIn() {
+  const router = useRouter();
   const [creating, setCreating] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ error: boolean; text: string } | null>(null);
+
+  // Already signed in (or just back from Google): go straight to My games.
+  useEffect(() => {
+    getSupabase()
+      ?.auth.getSession()
+      .then(({ data }) => data.session && router.replace("/maker"));
+  }, [router]);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const sb = getSupabase();
+    if (!sb) return setMessage({ error: true, text: NOT_CONNECTED });
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email"));
+    const password = String(form.get("password"));
+    setBusy(true);
+    setMessage(null);
+    if (creating) {
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name: String(form.get("name") ?? "").trim(), club: String(form.get("club") ?? "").trim() },
+          emailRedirectTo: `${location.origin}/maker`,
+        },
+      });
+      if (error) setMessage({ error: true, text: error.message });
+      else if (data.session) router.replace("/maker");
+      else setMessage({ error: false, text: "Check your email to confirm your account, then sign in here." });
+    } else {
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) setMessage({ error: true, text: error.message });
+      else router.replace("/maker");
+    }
+    setBusy(false);
+  }
+
+  async function google() {
+    const sb = getSupabase();
+    if (!sb) return setMessage({ error: true, text: NOT_CONNECTED });
+    const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${location.origin}/maker` } });
+    if (error) setMessage({ error: true, text: error.message });
+  }
+
   const tab = (on: boolean) =>
     `min-h-[46px] cursor-pointer border-0 text-[17px] ${on ? "bg-ink font-extrabold text-white" : "bg-white font-bold text-ink"}`;
 
@@ -36,7 +85,7 @@ export function MakerSignIn() {
       </section>
 
       <section className="flex grow items-center justify-center p-10">
-        <form className="flex w-full max-w-[440px] flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="flex w-full max-w-[440px] flex-col gap-4" onSubmit={submit}>
           <div className="grid grid-cols-2 overflow-hidden rounded-[14px] border-2 border-ink" role="tablist">
             <button type="button" role="tab" aria-selected={!creating} onClick={() => setCreating(false)} className={tab(!creating)}>
               Sign in
@@ -51,13 +100,13 @@ export function MakerSignIn() {
                 <label htmlFor="mname" className="text-[15px] font-bold">
                   Your name
                 </label>
-                <input id="mname" autoComplete="name" placeholder="Maya" className={field} />
+                <input id="mname" name="name" required autoComplete="name" placeholder="Maya" className={field} />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="mclub" className="text-[15px] font-bold">
                   Club or organization
                 </label>
-                <input id="mclub" autoComplete="organization" placeholder={SETTINGS.clubName} className={field} />
+                <input id="mclub" name="club" autoComplete="organization" placeholder={SETTINGS.clubName} className={field} />
               </div>
             </>
           )}
@@ -65,17 +114,41 @@ export function MakerSignIn() {
             <label htmlFor="memail" className="text-[15px] font-bold">
               Email
             </label>
-            <input id="memail" type="email" autoComplete="email" placeholder="you@school.edu" className={field} />
+            <input id="memail" name="email" type="email" required autoComplete="email" placeholder="you@school.edu" className={field} />
           </div>
           <div className="flex flex-col gap-1.5">
             <label htmlFor="mpass" className="text-[15px] font-bold">
               Password
             </label>
-            <input id="mpass" type="password" autoComplete={creating ? "new-password" : "current-password"} className={field} />
+            <input
+              id="mpass"
+              name="password"
+              type="password"
+              required
+              minLength={creating ? 8 : undefined}
+              autoComplete={creating ? "new-password" : "current-password"}
+              className={field}
+            />
           </div>
-          <Link href="/maker" className="flex min-h-[52px] items-center justify-center rounded-[14px] bg-ink text-[19px] font-extrabold text-white no-underline">
-            {creating ? "Create account" : "Sign in"}
-          </Link>
+          {message && (
+            <p role={message.error ? "alert" : "status"} className={`text-base font-bold ${message.error ? "text-flag-red" : "text-pine"}`}>
+              {message.text}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={busy}
+            className="flex min-h-[52px] cursor-pointer items-center justify-center rounded-[14px] border-0 bg-ink text-[19px] font-extrabold text-white disabled:opacity-60"
+          >
+            {busy ? "One moment…" : creating ? "Create account" : "Sign in"}
+          </button>
+          <button
+            type="button"
+            onClick={google}
+            className="flex min-h-[52px] cursor-pointer items-center justify-center gap-2.5 rounded-[14px] border-2 border-ink bg-white text-[17px] font-bold text-ink"
+          >
+            Continue with Google
+          </button>
           <p className="border-t-2 border-dashed border-[#C9C4D6] pt-3.5 text-base leading-snug text-body">
             Here to play? You don&apos;t need an account. Go to <b>{SETTINGS.gameUrl}</b> and enter the game PIN.
           </p>

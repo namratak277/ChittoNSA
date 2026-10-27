@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { MakerBuilder } from "@/screens/maker/MakerBuilder";
 
 export const metadata: Metadata = { title: "Question builder · Chhito!" };
 
-// Milestone 2: every game id shows the same fake game. Loading by id arrives in milestone 3.
-export default function BuilderPage() {
-  return <MakerBuilder title="Dashain & Democracy Night" />;
+// The id is read inside the Suspense boundary so the page shell can prerender.
+export default function BuilderPage({ params }: PageProps<"/maker/games/[id]">) {
+  return (
+    <Suspense fallback={null}>
+      <MakerBuilder gameId={params.then((p) => p.id)} />
+    </Suspense>
+  );
 }

@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import { useState, useSyncExternalStore } from "react";
 import { PrayerFlagBunting } from "@/components/brand/PrayerFlagBunting";
 import { FLAG, INK } from "@/lib/colors";
-import { formatPin, type DemoTeam } from "@/lib/demo";
+import { formatPin } from "@/lib/demo";
 import { SETTINGS } from "@/lib/settings";
+import type { Team } from "@/lib/teams";
+
+const noSubscribe = () => () => {};
+/** This site's address, e.g. "https://chhito.vercel.app" (empty while prerendering). */
+const useOrigin = () => useSyncExternalStore(noSubscribe, () => location.origin, () => "");
+const isPlaceholder = (value: string) => value.startsWith("[");
 
 const RULES = [
   {
@@ -41,12 +48,17 @@ const RULES = [
 
 interface HostLobbyProps {
   pin: string;
-  teams: DemoTeam[];
+  teams: { team: Team; members: number }[];
   onStart: () => void;
+  /** Disables Start (e.g. while the state change is saving). */
+  starting?: boolean;
 }
 
 /** Welcome to Base Camp (design-reference/Main.dc.html). */
-export function HostLobby({ pin, teams, onStart }: HostLobbyProps) {
+export function HostLobby({ pin, teams, onStart, starting = false }: HostLobbyProps) {
+  const origin = useOrigin();
+  // Players type the club's short address if the host set one; the QR code always goes straight to this PIN.
+  const joinAddress = isPlaceholder(SETTINGS.gameUrl) ? origin.replace(/^https?:\/\//, "") + "/play" : SETTINGS.gameUrl;
   const [step, setStep] = useState(0);
   const rule = RULES[step];
   const climbers = teams.reduce((n, t) => n + t.members, 0);
@@ -111,11 +123,11 @@ export function HostLobby({ pin, teams, onStart }: HostLobbyProps) {
 
       <div className="absolute right-16 top-[100px] flex w-80 flex-col gap-3">
         <div className="flex flex-col items-center gap-1.5 rounded-3xl border-[3px] border-ink bg-white p-4">
-          <div className="flex size-[132px] items-center justify-center rounded-xl border-2 border-dashed border-[#8A86A0] text-center text-[15px] text-body">
-            [QR CODE TO JOIN]
+          <div className="flex size-[132px] items-center justify-center">
+            {origin && <QRCodeSVG value={`${origin}/play/${pin}`} size={132} fgColor={INK} title={`Scan to join game ${pin}`} />}
           </div>
-          <p className="text-base text-body">
-            or go to {SETTINGS.gameUrl} · Game PIN
+          <p className="text-center text-base text-body">
+            or go to <b className="text-ink">{joinAddress}</b> · Game PIN
           </p>
           <p className="text-[44px] font-extrabold leading-none tracking-[4px]">{formatPin(pin)}</p>
         </div>
@@ -136,7 +148,8 @@ export function HostLobby({ pin, teams, onStart }: HostLobbyProps) {
         <button
           type="button"
           onClick={onStart}
-          className="flex min-h-[60px] cursor-pointer items-center justify-center gap-2.5 rounded-[18px] border-0 bg-flag-red text-2xl font-extrabold text-white"
+          disabled={starting}
+          className="flex min-h-[60px] cursor-pointer items-center justify-center gap-2.5 rounded-[18px] border-0 bg-flag-red text-2xl font-extrabold text-white disabled:opacity-60"
         >
           Start the climb
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden>

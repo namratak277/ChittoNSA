@@ -196,4 +196,5 @@ Final question set, Base Camp answer choices, Route Checkpoint info cards, extra
 - **Final Ascent** is scored by the host; every team automatically gets +10 for completing it.
 - **Copy:** everything is team-based. Use "points" (not metres), "most points wins" (not first to summit), "voting plans made" (not "pledged"), team winners only (no individual winner).
 - **Phone end screen stats** are team stats (team correct answers, team best streak), not personal.
+- **Database:** SQL lives in `supabase/migrations/` (run in number order in the Supabase SQL Editor). Questions carry a `checkpoint` number (1–4) instead of a `checkpoints` table; checkpoint names and voting lessons come from `src/lib/checkpoints.ts`. Storm cards are their own table. The voting-plan count is `sessions.voting_plans`. Maker pages talk to Supabase from the browser with the anon key, protected by row-level security; player writes go through checked database functions.
 - **Open:** where the "+5 explains its reasoning" award is given (no button for it in the mockups yet).

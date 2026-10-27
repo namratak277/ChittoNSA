@@ -7,21 +7,19 @@ const SECTIONS = [
   {
     title: "Players (phone)",
     links: [
-      { href: "/play", label: "Join a game" },
-      { href: `/play/${DEMO_PIN}`, label: "Join from the QR code (PIN filled in)" },
+      { href: "/play", label: "Join a live game" },
+      { href: `/play/${DEMO_PIN}`, label: "Demo phone screens (fake data)" },
     ],
   },
   {
     title: "Host (projector)",
-    links: [{ href: `/host/${DEMO_PIN}`, label: "Projector screens" }],
+    links: [{ href: `/host/${DEMO_PIN}`, label: "Demo projector screens (fake data)" }],
   },
   {
     title: "Game makers (laptop)",
     links: [
       { href: "/maker/sign-in", label: "Sign in" },
-      { href: "/maker", label: "My games" },
-      { href: "/maker/games/demo", label: "Question builder" },
-      { href: "/maker/games/demo/host", label: "Host setup" },
+      { href: "/maker", label: "My games (builder and host setup are inside)" },
     ],
   },
   {
