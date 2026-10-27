@@ -28,6 +28,9 @@ const inputClass = "h-14 w-full rounded-[14px] border-[3px] border-ink bg-white 
 /** Join with PIN, nickname, team flag colour and climber (design-reference/C-Phone.dc.html). */
 export function PlayerJoin({ initialPin, teams, onPinChange, pinNote, onJoin }: PlayerJoinProps) {
   const [pin, setPin] = useState(initialPin);
+  // Arrived from the QR code: the game is already chosen, so the PIN box stays hidden unless it's wrong.
+  const [editPin, setEditPin] = useState(initialPin.replace(/\D/g, "").length !== 6);
+  const showPin = editPin || Boolean(pinNote);
   const [nickname, setNickname] = useState("");
   const [teamIndex, setTeamIndex] = useState(0);
   const [style, setStyle] = useState<ClimberStyle>("topi");
@@ -59,10 +62,23 @@ export function PlayerJoin({ initialPin, teams, onPinChange, pinNote, onJoin }: 
             छिटो!
           </span>
         </h1>
-        <p className="mt-1 text-base text-body">No account needed — just the game PIN.</p>
+        <p className="mt-1 text-base text-body">
+          {showPin ? "No account needed — just the game PIN." : "No account needed. Pick a nickname and your team to join."}
+        </p>
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      {!showPin && (
+        <div className="flex items-center justify-between gap-3 rounded-[14px] border-2 border-ink bg-white px-4 py-2">
+          <p className="text-[17px]">
+            Joining game <b className="tracking-[2px]">{pin.replace(/\D/g, "").replace(/^(\d{3})(\d{3})$/, "$1 $2")}</b>
+          </p>
+          <button type="button" onClick={() => setEditPin(true)} className="min-h-11 cursor-pointer px-1 text-base font-bold text-flag-blue underline">
+            Change
+          </button>
+        </div>
+      )}
+
+      <div className={showPin ? "flex flex-col gap-1.5" : "hidden"}>
         <label htmlFor="pin" className="text-[17px] font-bold">
           Game PIN
         </label>

@@ -126,13 +126,14 @@ export function HostLobby({ pin, teams, onStart, starting = false }: HostLobbyPr
 
       <div className="absolute right-16 top-[100px] flex w-80 flex-col gap-3">
         <div className="flex flex-col items-center gap-1.5 rounded-3xl border-[3px] border-ink bg-white p-4">
-          <div className="flex size-[132px] items-center justify-center">
-            {origin && <QRCodeSVG value={`${origin}/play/${pin}`} size={132} fgColor={INK} title={`Scan to join game ${pin}`} />}
+          <p className="text-[26px] font-extrabold leading-none">Scan to join</p>
+          <div className="flex size-[200px] items-center justify-center">
+            {origin && <QRCodeSVG value={`${origin}/play/${pin}`} size={200} fgColor={INK} title={`Scan to join game ${pin}`} />}
           </div>
-          <p className="text-center text-base text-body">
-            or go to <b className="text-ink">{joinAddress}</b> · Game PIN
+          <p className="text-center text-[15px] text-body">
+            No camera? Go to <b className="text-ink">{joinAddress}</b> and enter PIN{" "}
+            <b className="text-ink tracking-[2px]">{formatPin(pin)}</b>
           </p>
-          <p className="text-[44px] font-extrabold leading-none tracking-[4px]">{formatPin(pin)}</p>
         </div>
         <p className="text-lg font-bold">
           {teams.length} teams · {climbers} climbers at Base Camp
