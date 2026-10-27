@@ -5,8 +5,8 @@ import { useState, useSyncExternalStore } from "react";
 import { PrayerFlagBunting } from "@/components/brand/PrayerFlagBunting";
 import { FLAG, INK } from "@/lib/colors";
 import { formatPin } from "@/lib/demo";
-import { SETTINGS } from "@/lib/settings";
 import type { Team } from "@/lib/teams";
+import { useSettings } from "@/lib/useSettings";
 
 const noSubscribe = () => () => {};
 /** This site's address, e.g. "https://chhito.vercel.app" (empty while prerendering). */
@@ -17,7 +17,7 @@ const RULES = [
   {
     tab: "Join",
     title: "Pick your team by flag colour",
-    body: "Scan the QR code or enter the PIN. Your flag colour is your team: Summit Seekers, Snow Leopards, Himalayan Heroes, Team Sagarmatha or Momo Mountaineers.",
+    body: "Scan the QR code or enter the PIN. Your flag colour is your team: {teams}.",
     color: FLAG.blue,
   },
   {
@@ -41,7 +41,7 @@ const RULES = [
   {
     tab: "Summit",
     title: "From the summit to the ballot",
-    body: `The team with the most points becomes Summit Champions and wins ${SETTINGS.prize}. Then everyone makes their own voting plan. You planned your climb, now plan your vote.`,
+    body: "The team with the most points becomes Summit Champions and wins {prize}. Then everyone makes their own voting plan. You planned your climb, now plan your vote.",
     color: INK,
   },
 ];
@@ -57,10 +57,13 @@ interface HostLobbyProps {
 /** Welcome to Base Camp (design-reference/Main.dc.html). */
 export function HostLobby({ pin, teams, onStart, starting = false }: HostLobbyProps) {
   const origin = useOrigin();
+  const settings = useSettings();
   // Players type the club's short address if the host set one; the QR code always goes straight to this PIN.
-  const joinAddress = isPlaceholder(SETTINGS.gameUrl) ? origin.replace(/^https?:\/\//, "") + "/play" : SETTINGS.gameUrl;
+  const joinAddress = isPlaceholder(settings.gameUrl) ? origin.replace(/^https?:\/\//, "") + "/play" : settings.gameUrl;
   const [step, setStep] = useState(0);
   const rule = RULES[step];
+  const names = teams.map((t) => t.team.name);
+  const teamList = names.length > 1 ? `${names.slice(0, -1).join(", ")} or ${names.at(-1)}` : (names[0] ?? "");
   const climbers = teams.reduce((n, t) => n + t.members, 0);
   const go = (n: number) => setStep((n + RULES.length) % RULES.length);
 
@@ -108,7 +111,7 @@ export function HostLobby({ pin, teams, onStart, starting = false }: HostLobbyPr
           </div>
           <div className="flex flex-col gap-1.5">
             <p className="text-[28px] font-extrabold leading-tight">{rule.title}</p>
-            <p className="text-xl leading-snug text-body">{rule.body}</p>
+            <p className="text-xl leading-snug text-body">{rule.body.replace("{prize}", settings.prize).replace("{teams}", teamList)}</p>
           </div>
         </div>
         <div className="flex gap-3">

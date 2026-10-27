@@ -44,18 +44,32 @@ const buzzOrder = [DEMO_TEAMS[1], DEMO_TEAMS[0], DEMO_TEAMS[2], DEMO_TEAMS[3]];
 export function HostDemo({ pin }: { pin: Promise<string> }) {
   const gamePin = use(pin);
   const [screen, setScreen] = useState<Screen>("lobby");
+  const [awarded, setAwarded] = useState<Record<string, number>>({});
+  const [buzzTurn, setBuzzTurn] = useState(0);
 
   const climb = (phase: "question" | "reveal" | "buzzer") => (
     <HostClimb
       phase={phase}
       question={DEMO_QUESTION}
       teams={phase === "reveal" ? afterRound : DEMO_TEAMS}
-      buzzOrder={buzzOrder}
+      buzzer={{
+        order: buzzOrder,
+        turn: buzzTurn,
+        missed: buzzTurn,
+        solving: 1,
+        secondsLeft: 7,
+        picked: null,
+        onRight: () => setScreen("reveal"),
+        onWrong: () => (buzzTurn + 1 < buzzOrder.length ? setBuzzTurn(buzzTurn + 1) : setScreen("reveal")),
+      }}
       gained={Object.fromEntries(Object.entries(DEMO_ROUND).map(([id, r]) => [id, r.gained]))}
       secondsLeft={14}
+      answered={4}
       onReveal={() => setScreen("reveal")}
-      onNextQuestion={() => setScreen("question")}
-      onStorm={() => setScreen("storm")}
+      next={[
+        { label: "Next question", onClick: () => setScreen("question") },
+        { label: "Next: Storm Zone event", onClick: () => setScreen("storm") },
+      ]}
     />
   );
 
@@ -70,10 +84,15 @@ export function HostDemo({ pin }: { pin: Promise<string> }) {
             card={DEMO_STORM}
             cardNumber={1}
             cardTotal={3}
-            teams={afterRound}
+            teams={afterRound.map((t) => ({ key: t.team.id, team: t.team }))}
             timeLeft="1:37"
-            onFinalAscent={() => setScreen("question")}
-            onResults={() => setScreen("summit")}
+            awarded={awarded}
+            onAward={(key, _reason, points) => setAwarded((a) => ({ ...a, [key]: (a[key] ?? 0) + points }))}
+            onReset={() => setAwarded({})}
+            next={[
+              { label: "Next: Final Ascent", onClick: () => setScreen("question") },
+              { label: "Final results", onClick: () => setScreen("summit") },
+            ]}
           />
         )}
         {screen === "summit" && <HostSummit teams={finalTeams} onPlanVote={() => setScreen("pledge")} />}

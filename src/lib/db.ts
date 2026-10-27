@@ -57,8 +57,59 @@ export interface SessionRow {
   phase_started_at: string | null;
   settings: Record<string, string>;
   voting_plans: number;
+  public_question: PublicQuestion | null;
+  public_card: PublicCard | null;
   started_at: string | null;
   created_at: string;
+}
+
+/** The current question as phones see it (sessions.public_question, see 0003_play.sql). */
+export interface PublicQuestion {
+  id: string;
+  number: number;
+  total: number;
+  checkpoint: QuestionRow["checkpoint"];
+  type: QuestionType;
+  topic: Topic;
+  prompt: string;
+  options: string[];
+  /** Buttons: whole question. Buzzer: each team's turn. */
+  timer_seconds: number;
+  mode: Mode;
+  // Buzzer mode (team keys):
+  buzz: TeamId[];
+  missed: TeamId[];
+  turn_team: TeamId | null;
+  turn_started_at: string | null;
+  // Added at the reveal:
+  correct_index?: number | null;
+  reveal_title?: string | null;
+  trail_fact?: string | null;
+  /** How many teams picked each answer. */
+  team_counts?: number[];
+  /** Points each team (by team key) earned this round. */
+  gained?: Record<string, number>;
+  /** Teams that earned the +5 Base Camp supply token this round. */
+  prep?: Record<string, number>;
+}
+
+/** The storm card everyone sees during STORM_EVENT (sessions.public_card). */
+export interface PublicCard {
+  id: string;
+  number: number;
+  total: number;
+  title: string;
+  body: string;
+  helpful_supply: SupplyId | null;
+  seconds: number;
+}
+
+/** What my_team_answer / submit_answer return. */
+export interface TeamAnswer {
+  question_id: string;
+  option_index: number;
+  answered_by: string | null;
+  mine: boolean;
 }
 
 export interface TeamRow {
@@ -72,6 +123,7 @@ export interface TeamRow {
   marker_style: ClimberStyle | null;
   supplies: SupplyId[];
   supplies_locked: boolean;
+  answered_question_id: string | null;
 }
 
 /** The team's colours and drawings, with the name stored for this session. */

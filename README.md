@@ -197,4 +197,25 @@ Final question set, Base Camp answer choices, Route Checkpoint info cards, extra
 - **Copy:** everything is team-based. Use "points" (not metres), "most points wins" (not first to summit), "voting plans made" (not "pledged"), team winners only (no individual winner).
 - **Phone end screen stats** are team stats (team correct answers, team best streak), not personal.
 - **Database:** SQL lives in `supabase/migrations/` (run in number order in the Supabase SQL Editor). Questions carry a `checkpoint` number (1–4) instead of a `checkpoints` table; checkpoint names and voting lessons come from `src/lib/checkpoints.ts`. Storm cards are their own table. The voting-plan count is `sessions.voting_plans`. Maker pages talk to Supabase from the browser with the anon key, protected by row-level security; player writes go through checked database functions.
-- **Open:** where the "+5 explains its reasoning" award is given (no button for it in the mockups yet).
+- **Game state:** the host's buttons call `host_*` database functions; phones follow the `sessions` row over Realtime. Phones see the question through `sessions.public_question`, which gets the right answer only at the reveal. Answers are scored when they arrive (server clock), but points are added to teams at the reveal so the scoreboard never gives the answer away. Questions play in checkpoint order, then builder order.
+- **Mountain markers:** the leading team stands at the checkpoint the game has reached (Summit only at the results); other teams stand in proportion to their points.
+- **Timer:** in Buttons mode the host can force one timer for every question, or leave "Each question's own timer" (stored as `timer_seconds = 0`).
+- **Night order:** Lobby → supply shop → Checkpoint 1–3 questions → Storm Zone (first storm card; the host can draw more) → Checkpoint 4 questions (Final Ascent) → Summit Champions → voting plan + debrief → end.
+- **Supply shop:** each team shares one pack that any teammate can edit; one phone locks it in. The shop timer shows 5 minutes, but the host closes the shop; closing it locks every team's pack.
+- **Base Camp prep bonus:** +5 supply token for a team that used at least 8 of its 10 supply points and got a Checkpoint 1 question right (once per team).
+- **Storm cards:** a team that packed the card's helpful supply gets +5 automatically when the card is drawn. Teams get 2 minutes to plan.
+- **Host scorecard** (Storm Zone and final scenarios): +10 plan, +5 why (explains its reasoning), +5 backup, +5 team. "Reset this round" takes back this screen's taps.
+- **Final Ascent:** a final-scenario question is talked through (no answer buttons); every team gets +10 at its reveal.
+- **Buzzer mode:** finish order comes from the server. The team whose turn it is answers on their phones; the projector shows what they picked (and whether it's right) so the host can tap Right → reveal or Wrong → next team.
+- **Host settings:** the [PLACEHOLDERS] are filled in on Host setup, saved with each session (and remembered on that laptop). Blank fields keep the placeholder.
+- **Club and place:** the club is UNCG Nepalese Student Association (Instagram @uncgnsa), set as defaults in `content/seed.json`. Voting info is for Greensboro, NC (Guilford County) and links only to official tools: the NC State Board of Elections lookups on ncsbe.gov (registration, polling place, early voting sites, vote by mail, voter ID, county boards), which work for every NC county, and vote.gov for players registered in another state. The link list lives in `NC_VOTING_LINKS` in `src/lib/settings.ts`. Dates and deadlines stay placeholders for the host.
+- **Voting plan** is saved only in the phone's localStorage; the server only counts that a plan was made.
+
+## 17. Setup and deploy
+
+1. **Supabase:** create a project, then run every file in `supabase/migrations/` in number order (SQL Editor → New query → paste → Run).
+2. **Keys:** copy `.env.local` values from Supabase → Project Settings → API: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. (`SUPABASE_SERVICE_ROLE_KEY` isn't used by the app.)
+3. **Local:** `npm install`, then `npm run dev` and open http://localhost:3000.
+4. **Auth URLs:** in Supabase → Authentication → URL Configuration, set the Site URL to your live address and add `http://localhost:3000/**` and `https://<your-site>/**` to Redirect URLs. For Google sign-in, turn on the Google provider there too.
+5. **Vercel:** import the GitHub repo, add the two `NEXT_PUBLIC_SUPABASE_*` environment variables, deploy. Put the short address in Host setup → Game address.
+6. **Before the night:** play a full test game with two phones (iPhone Safari and Android Chrome), one per team. (no button for it in the mockups yet).

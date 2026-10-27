@@ -1,31 +1,27 @@
-"use client";
-
-import { useState } from "react";
 import { TimerRing } from "@/components/ui/TimerRing";
 import { FLAG, INK } from "@/lib/colors";
-import type { DemoTeam } from "@/lib/demo";
+import type { Team } from "@/lib/teams";
+import type { HostAction } from "./HostClimb";
+import { Scorecard, type AwardReason } from "./Scorecard";
 
 interface HostStormProps {
   card: { title: string; body: string };
   cardNumber: number;
   cardTotal: number;
-  teams: DemoTeam[];
+  teams: { key: string; team: Team }[];
   timeLeft: string;
-  onFinalAscent: () => void;
-  onResults: () => void;
+  /** e.g. "Weather radio helped: Summit Seekers +5". */
+  supplyNote?: string;
+  awarded: Record<string, number>;
+  onAward: (key: string, reason: AwardReason, points: number) => void;
+  onReset: () => void;
+  /** What comes next; the first is the main button. */
+  next: HostAction[];
+  busy?: boolean;
 }
 
-const AWARDS = [
-  { key: "plan", label: "+10 plan", points: 10, aria: "a practical plan" },
-  { key: "backup", label: "+5 backup", points: 5, aria: "a backup plan" },
-  { key: "team", label: "+5 team", points: 5, aria: "teamwork" },
-] as const;
-
 /** Checkpoint 3: Storm Zone event card with the host scorecard (design-reference/Host-Storm.dc.html). */
-export function HostStorm({ card, cardNumber, cardTotal, teams, timeLeft, onFinalAscent, onResults }: HostStormProps) {
-  const [awarded, setAwarded] = useState<Record<string, number>>({});
-  const award = (id: string, n: number) => setAwarded((a) => ({ ...a, [id]: (a[id] ?? 0) + n }));
-
+export function HostStorm({ card, cardNumber, cardTotal, teams, timeLeft, supplyNote, awarded, onAward, onReset, next, busy = false }: HostStormProps) {
   return (
     <>
       <svg width="1280" height="720" viewBox="0 0 1280 720" aria-hidden className="absolute inset-0">
@@ -65,7 +61,7 @@ export function HostStorm({ card, cardNumber, cardTotal, teams, timeLeft, onFina
         </div>
         <p className="text-[34px] font-extrabold leading-tight">{card.title}</p>
         <p className="text-xl leading-snug text-[#3A3550]">{card.body}</p>
-        <p className="text-base text-body">Two minutes to talk. Then one person explains your plan. Did any of your supplies help?</p>
+        <p className="text-base text-body">{supplyNote ?? "Two minutes to talk. Then one person explains your plan. Did any of your supplies help?"}</p>
       </div>
 
       <div className="absolute left-14 top-[476px] w-160 rounded-[18px] bg-ink px-5 py-3.5 text-cream">
@@ -85,48 +81,21 @@ export function HostStorm({ card, cardNumber, cardTotal, teams, timeLeft, onFina
             Practical, informed plans score best, not the fastest answer.
           </p>
         </div>
-        <div className="flex flex-col gap-1.5 rounded-[20px] border-[3px] border-ink bg-white px-[18px] py-3">
-          <div className="flex items-baseline justify-between">
-            <span className="text-[19px] font-extrabold">Host scorecard</span>
-            <span className="text-[13px] text-body">tap to award</span>
-          </div>
-          <ul className="flex flex-col gap-1">
-            {teams.map(({ team }) => (
-              <li key={team.id} className="flex items-center gap-2">
-                <span className="size-3.5 shrink-0 rounded border-2 border-ink" style={{ background: team.color }} aria-hidden />
-                <span className="min-w-0 grow text-sm font-bold leading-tight">{team.name}</span>
-                {AWARDS.map((a) => (
-                  <button
-                    key={a.key}
-                    type="button"
-                    onClick={() => award(team.id, a.points)}
-                    aria-label={`Award ${team.name} ${a.points} points for ${a.aria}`}
-                    className="min-h-11 shrink-0 cursor-pointer whitespace-nowrap rounded-lg border-2 border-ink bg-cream px-1.5 text-xs font-extrabold"
-                  >
-                    {a.label}
-                  </button>
-                ))}
-                <b className="w-[34px] text-right text-[17px]" aria-live="polite">
-                  +{awarded[team.id] ?? 0}
-                </b>
-              </li>
-            ))}
-          </ul>
-          <button
-            type="button"
-            onClick={() => setAwarded({})}
-            className="min-h-8 cursor-pointer self-start rounded-lg border-0 bg-transparent px-2.5 text-[13px] underline"
-          >
-            Reset this round
-          </button>
-        </div>
+        <Scorecard teams={teams} awarded={awarded} onAward={onAward} onReset={onReset} busy={busy} />
         <div className="grid grid-cols-2 gap-2.5">
-          <button type="button" onClick={onFinalAscent} className="min-h-[52px] cursor-pointer rounded-[14px] border-0 bg-ink text-[17px] font-extrabold text-white">
-            Next: Final Ascent
-          </button>
-          <button type="button" onClick={onResults} className="min-h-[52px] cursor-pointer rounded-[14px] border-2 border-ink bg-white text-[17px] font-bold">
-            Final results
-          </button>
+          {next.map((action, i) => (
+            <button
+              key={action.label}
+              type="button"
+              onClick={action.onClick}
+              disabled={busy}
+              className={`min-h-[52px] cursor-pointer rounded-[14px] text-[17px] disabled:opacity-60 ${
+                i === 0 ? "border-0 bg-ink font-extrabold text-white" : "border-2 border-ink bg-white font-bold"
+              } ${next.length % 2 === 1 && i === next.length - 1 ? "col-span-2" : ""}`}
+            >
+              {action.label}
+            </button>
+          ))}
         </div>
       </div>
     </>

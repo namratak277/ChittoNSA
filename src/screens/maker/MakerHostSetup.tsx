@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
+import { SETTINGS } from "@/lib/settings";
 import { teamsFor, type TeamCount } from "@/lib/teams";
+import { filledSettings, SETTING_FIELDS, type Settings } from "@/lib/useSettings";
 import type { Maker } from "@/lib/useMaker";
 import { MakerGate } from "./MakerGate";
 import { MakerTopBarShell } from "./MakerShell";
@@ -40,6 +42,17 @@ export function MakerHostSetup({ gameId }: { gameId: Promise<string> }) {
 // Buttons mode: 0 means each question uses the timer set in the builder.
 const DEFAULT_TIMER: Record<Mode, number> = { buttons: 0, buzzer: 10 };
 
+// The host's filled-in placeholders, remembered on this laptop for the next game night.
+const SETTINGS_KEY = "chhito:host-settings";
+
+function readSavedSettings(): Partial<Settings> {
+  try {
+    return JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "{}");
+  } catch {
+    return {};
+  }
+}
+
 /** Random 6-digit PIN that never starts with 0, so it reads well on the projector. */
 function makePin() {
   const n = crypto.getRandomValues(new Uint32Array(1))[0] % 900000;
@@ -55,6 +68,8 @@ function HostSetup({ id, maker }: { id: string; maker: Maker }) {
   const [teams, setTeams] = useState("5");
   const [opening, setOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Only rendered in the browser (after sign-in), so reading this laptop's saved values here is safe.
+  const [settings, setSettings] = useState<Partial<Settings>>(readSavedSettings);
   const buttons = mode === "buttons";
   const modeName = buttons ? "Buttons mode" : "Buzzer mode";
 
@@ -89,15 +104,26 @@ function HostSetup({ id, maker }: { id: string; maker: Maker }) {
     // One live game per maker: close any earlier session that was left open.
     await sb.from("sessions").update({ state: "ENDED" }).eq("maker_id", maker.id).neq("state", "ENDED");
     const teamCount = Number(teams) as TeamCount;
+    const filled = filledSettings(settings);
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(filled));
+    } catch {
+      // Storage blocked: the values still go with this session.
+    }
     for (let attempt = 0; attempt < 5; attempt++) {
       const { data, error } = await sb
         .from("sessions")
-        .insert({ game_id: id, pin: makePin(), mode, timer_seconds: timer, team_count: teamCount })
+        .insert({ game_id: id, pin: makePin(), mode, timer_seconds: timer, team_count: teamCount, settings: filled })
         .select("id, pin")
         .single();
       if (error?.code === "23505") continue; // PIN already live, try another
       if (error) break;
-      const rows = teamsFor(teamCount).map((t, i) => ({ session_id: data.id, team_key: t.id, name: t.name, position: i }));
+      const rows = teamsFor(teamCount).map((t, i) => ({
+        session_id: data.id,
+        team_key: t.id,
+        name: t.id === "orange" && filled.team6Name ? filled.team6Name : t.name,
+        position: i,
+      }));
       const t = await sb.from("teams").insert(rows);
       if (t.error) {
         setError(t.error.message);
@@ -169,12 +195,36 @@ function HostSetup({ id, maker }: { id: string; maker: Maker }) {
               </select>
             </div>
           </div>
+          <fieldset className="grid gap-x-[18px] gap-y-3 rounded-2xl border-2 border-ink bg-white px-[22px] py-[18px] md:grid-cols-2">
+            <legend className="px-1 text-lg font-extrabold">Fill in for tonight</legend>
+            <p className="text-[15px] text-body md:col-span-2">
+              Shown on the projector and phones. Leave a box empty to show the placeholder. Take dates and deadlines from ncsbe.gov only.
+            </p>
+            {SETTING_FIELDS.map((f) => (
+              <div key={f.key} className="flex flex-col gap-1">
+                <label htmlFor={`set-${f.key}`} className="text-sm font-extrabold">
+                  {f.label}
+                </label>
+                <input
+                  id={`set-${f.key}`}
+                  value={settings[f.key] ?? ""}
+                  placeholder={SETTINGS[f.key]}
+                  aria-describedby={`set-${f.key}-hint`}
+                  onChange={(e) => setSettings((s) => ({ ...s, [f.key]: e.target.value }))}
+                  className="h-[46px] rounded-[10px] border-2 border-ink bg-white px-3 text-base"
+                />
+                <span id={`set-${f.key}-hint`} className="text-[13px] text-body">
+                  {f.hint}
+                </span>
+              </div>
+            ))}
+          </fieldset>
         </div>
 
         <aside className="flex shrink-0 flex-col gap-3 rounded-[20px] border-[3px] border-ink bg-white p-[22px] lg:w-[340px] lg:self-start">
           <h2 className="text-xl font-extrabold">Ready to open Base Camp</h2>
           <p className="text-base leading-normal">
-            5 checkpoints · 60 minutes · {modeName} · {teams} teams
+            5 checkpoints · {modeName} · {teams} teams
             <br />
             Projector: this laptop
             <br />

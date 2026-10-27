@@ -1,7 +1,10 @@
 import { ClimberMarker, type ClimberStyle } from "@/components/climbers/ClimberMarker";
 import { FLAG, GLACIER, INK } from "@/lib/colors";
-import { OFFICIAL_LINKS, SETTINGS } from "@/lib/settings";
+"use client";
+
+import { NC_VOTING_LINKS, OFFICIAL_LINKS } from "@/lib/settings";
 import type { Team } from "@/lib/teams";
+import { useSettings } from "@/lib/useSettings";
 
 interface PlayerSummitProps {
   team: Team;
@@ -23,6 +26,9 @@ function ordinal(n: number) {
 
 /** Final team rank on the phone (design-reference/Phone-Summit.dc.html). */
 export function PlayerSummit({ team, style, place, points, teamCorrect, questionCount, teamBestStreak, planMade }: PlayerSummitProps) {
+  const settings = useSettings();
+  // "@uncgnsa" → link to the profile; a [PLACEHOLDER] stays plain text.
+  const instagram = /^@?[\w.]+$/.test(settings.clubInstagram) ? settings.clubInstagram.replace(/^@/, "") : null;
   return (
     <>
       <svg viewBox="0 0 350 170" aria-hidden className="block w-full">
@@ -66,15 +72,33 @@ export function PlayerSummit({ team, style, place, points, teamCorrect, question
       </dl>
       <div className="flex flex-col gap-2.5 rounded-[18px] border-[3px] border-ink bg-white p-4">
         <p className="text-xl font-extrabold">Your next summit: Election Day</p>
+        <p className="text-[15px] text-body">Election Day: {settings.electionDate}</p>
         <a
-          href={OFFICIAL_LINKS.voteGov.href}
+          href={NC_VOTING_LINKS[0].href}
           target="_blank"
           rel="noopener noreferrer"
           className="flex min-h-[52px] items-center justify-center rounded-[14px] bg-flag-blue text-lg font-extrabold text-white no-underline"
         >
-          Check registration · vote.gov
+          Check my NC registration · ncsbe.gov
         </a>
-        <p className="text-[15px] text-body">Follow {SETTINGS.clubInstagram} for the next event.</p>
+        <p className="text-[15px] text-body">
+          Registered in another state? Check at{" "}
+          <a href={OFFICIAL_LINKS.voteGov.href} target="_blank" rel="noopener noreferrer" className="font-bold text-flag-blue">
+            vote.gov
+          </a>
+          .
+        </p>
+        <p className="text-[15px] text-body">
+          Follow{" "}
+          {instagram ? (
+            <a href={`https://www.instagram.com/${instagram}/`} target="_blank" rel="noopener noreferrer" className="font-bold text-flag-blue">
+              {settings.clubInstagram}
+            </a>
+          ) : (
+            settings.clubInstagram
+          )}{" "}
+          for the next event.
+        </p>
       </div>
     </>
   );

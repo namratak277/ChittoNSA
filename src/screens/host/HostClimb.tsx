@@ -1,26 +1,69 @@
 "use client";
 
-import { useState } from "react";
 import { FlagRope } from "@/components/answers/FlagRope";
 import { Mountain } from "@/components/mountain/Mountain";
 import { MountainMarkers } from "@/components/mountain/MountainMarkers";
 import { TimerRing } from "@/components/ui/TimerRing";
-import { ranked, type DemoQuestion, type DemoTeam } from "@/lib/demo";
+import { ranked, type StageTeam } from "@/lib/stage";
 
 export type ClimbPhase = "question" | "reveal" | "buzzer";
 
+export interface ClimbQuestion {
+  label: string;
+  prompt: string;
+  /** Empty for a talk-it-through question (final scenario). */
+  options: string[];
+  /** -1 when there's no right answer to show. */
+  correctIndex: number;
+  revealTitle: string;
+  trailFact: string;
+  /** Heading over the fact after the reveal (defaults to TRAIL FACT). */
+  factTitle?: string;
+  /** How many teams picked each answer. */
+  teamCounts: number[];
+}
+
+export interface HostAction {
+  label: string;
+  onClick: () => void;
+}
+
+export interface BuzzerState {
+  /** Teams in buzz-in order. */
+  order: StageTeam[];
+  /** Index in `order` of the team answering now, or -1. */
+  turn: number;
+  /** Teams still solving the flag puzzle. */
+  solving: number;
+  /** How many teams at the front of `order` have already missed. */
+  missed: number;
+  /** Seconds left in the current team's turn. */
+  secondsLeft: number | null;
+  /** What the answering team picked, e.g. "ग · 15 days (right)". */
+  picked: string | null;
+  onRight: () => void;
+  onWrong: () => void;
+}
+
 interface HostClimbProps {
   phase: ClimbPhase;
-  question: DemoQuestion;
-  teams: DemoTeam[];
-  /** Teams ranked by buzz-in order (buzzer phase). */
-  buzzOrder?: DemoTeam[];
+  question: ClimbQuestion;
+  teams: StageTeam[];
+  /** Buzz-in order and turn (buzzer phase). */
+  buzzer?: BuzzerState;
+  /** Host scorecard, shown while teams talk through a final scenario. */
+  scorecard?: React.ReactNode;
   /** Points each team gained this round (reveal phase). */
   gained?: Record<string, number>;
-  secondsLeft: number;
+  /** Null when the question has no timer running. */
+  secondsLeft: number | null;
+  /** Teams that have locked an answer (question phase). */
+  answered: number;
   onReveal: () => void;
-  onNextQuestion: () => void;
-  onStorm: () => void;
+  /** Buttons after the reveal; the first is the main one. */
+  next: HostAction[];
+  /** True while a host action is saving, so buttons can't be double-clicked. */
+  busy?: boolean;
 }
 
 const panel = "absolute flex flex-col rounded-[20px] border-[3px] border-ink bg-white box-border";
@@ -29,10 +72,12 @@ const panel = "absolute flex flex-col rounded-[20px] border-[3px] border-ink bg-
  * The question on the mountain: Mountain, Host-Reveal and Host-Buzzer in one component,
  * so team markers walk up the trail when the phase changes from question to reveal.
  */
-export function HostClimb({ phase, question, teams, buzzOrder = [], gained = {}, secondsLeft, onReveal, onNextQuestion, onStorm }: HostClimbProps) {
+export function HostClimb({ phase, question, teams, buzzer, scorecard, gained = {}, secondsLeft, answered, onReveal, next, busy = false }: HostClimbProps) {
   const climbers = teams.reduce((n, t) => n + t.members, 0);
-  const rightCount = question.teamCounts[question.correctIndex];
+  const rightCount = question.teamCounts[question.correctIndex] ?? 0;
   const markers = teams.map((t) => ({ team: t.team, style: t.style, checkpoint: t.checkpoint }));
+  const talkItThrough = question.options.length === 0;
+  const allIn = answered >= teams.length;
 
   return (
     <>
@@ -43,7 +88,7 @@ export function HostClimb({ phase, question, teams, buzzOrder = [], gained = {},
         {phase === "reveal" ? (
           <>
             <p className="text-[17px] font-bold leading-tight tracking-[1px] text-flag-green-dark">
-              ANSWER · {rightCount} OF {teams.length} TEAMS GOT IT RIGHT
+              {talkItThrough ? "GREAT CLIMBING, EVERY TEAM" : `ANSWER · ${rightCount} OF ${teams.length} TEAMS GOT IT RIGHT`}
             </p>
             <h1 className="text-[30px] font-extrabold leading-[1.1]">{question.revealTitle}</h1>
           </>
@@ -60,21 +105,32 @@ export function HostClimb({ phase, question, teams, buzzOrder = [], gained = {},
       {phase === "question" && (
         <>
           <div className={`${panel} left-10 top-[150px] w-[210px] items-center gap-2.5 p-[18px]`}>
-            <TimerRing value={secondsLeft} label={`${secondsLeft} seconds left`} />
-            <p className="text-lg font-bold">seconds left</p>
-            <p className="text-base text-body">4 of {teams.length} teams answered</p>
-            <button type="button" onClick={onReveal} className="min-h-11 w-full cursor-pointer rounded-xl border-0 bg-ink text-[17px] font-extrabold text-white">
-              Reveal answer
+            {secondsLeft !== null && (
+              <>
+                <TimerRing value={secondsLeft} label={secondsLeft > 0 ? `${secondsLeft} seconds left` : "Time's up"} />
+                <p className="text-lg font-bold">{secondsLeft > 0 ? "seconds left" : "Time's up!"}</p>
+              </>
+            )}
+            <p className="text-center text-base text-body">
+              {talkItThrough ? "Teams talk it through, then one person explains" : allIn ? "Every team has answered" : `${answered} of ${teams.length} teams answered`}
+            </p>
+            <button
+              type="button"
+              onClick={onReveal}
+              disabled={busy}
+              className="min-h-11 w-full cursor-pointer rounded-xl border-0 bg-ink text-[17px] font-extrabold text-white disabled:opacity-60"
+            >
+              {talkItThrough ? "Done talking" : "Reveal answer"}
             </button>
           </div>
-          <TeamPoints teams={teams} />
+          {talkItThrough && scorecard ? <div className="absolute right-10 top-[130px] w-[486px]">{scorecard}</div> : <TeamPoints teams={teams} />}
         </>
       )}
 
       {phase === "reveal" && (
         <>
           <div className={`${panel} left-10 top-[150px] w-[250px] gap-2 p-[18px]`}>
-            <p className="text-[15px] font-bold tracking-[1px] text-flag-red">TRAIL FACT</p>
+            <p className="text-[15px] font-bold tracking-[1px] text-flag-red">{question.factTitle ?? "TRAIL FACT"}</p>
             <p className="text-lg leading-snug">{question.trailFact}</p>
           </div>
           <div className={`${panel} right-10 top-[150px] w-[250px] gap-2 p-[18px]`}>
@@ -92,32 +148,41 @@ export function HostClimb({ phase, question, teams, buzzOrder = [], gained = {},
             </ul>
             <p className="text-[13px] leading-snug text-body">A miss costs nothing. Every team keeps climbing.</p>
             <div className="mt-2 flex flex-col gap-2">
-              <button type="button" onClick={onNextQuestion} className="min-h-12 cursor-pointer rounded-[14px] border-0 bg-ink text-lg font-extrabold text-white">
-                Next question
-              </button>
-              <button type="button" onClick={onStorm} className="min-h-12 cursor-pointer rounded-[14px] border-2 border-ink bg-white text-[17px] font-bold">
-                Next: Storm Zone event
-              </button>
+              {next.map((action, i) => (
+                <button
+                  key={action.label}
+                  type="button"
+                  onClick={action.onClick}
+                  disabled={busy}
+                  className={`min-h-12 cursor-pointer rounded-[14px] disabled:opacity-60 ${
+                    i === 0 ? "border-0 bg-ink text-lg font-extrabold text-white" : "border-2 border-ink bg-white text-[17px] font-bold"
+                  }`}
+                >
+                  {action.label}
+                </button>
+              ))}
             </div>
           </div>
         </>
       )}
 
-      {phase === "buzzer" && <BuzzerPanels order={buzzOrder} onRight={onReveal} />}
+      {phase === "buzzer" && buzzer && <BuzzerPanels buzzer={buzzer} onReveal={onReveal} busy={busy} />}
 
       <div className="absolute left-[456px] top-[592px] flex h-9 items-center rounded-[18px] bg-ink px-3 text-base font-extrabold text-white">
         {phase === "reveal" ? `All ${teams.length} teams still climbing` : `${climbers} climbers · ${teams.length} teams`}
       </div>
 
-      <FlagRope
-        options={question.options}
-        reveal={phase === "reveal" ? { correctIndex: question.correctIndex, teamCounts: question.teamCounts } : undefined}
-      />
+      {!talkItThrough && (
+        <FlagRope
+          options={question.options}
+          reveal={phase === "reveal" && question.correctIndex >= 0 ? { correctIndex: question.correctIndex, teamCounts: question.teamCounts } : undefined}
+        />
+      )}
     </>
   );
 }
 
-function TeamPoints({ teams }: { teams: DemoTeam[] }) {
+function TeamPoints({ teams }: { teams: StageTeam[] }) {
   return (
     <div className={`${panel} right-10 top-[150px] w-[230px] gap-2 p-[18px]`}>
       <p className="text-xl font-extrabold">Team points</p>
@@ -136,21 +201,23 @@ function TeamPoints({ teams }: { teams: DemoTeam[] }) {
   );
 }
 
-function BuzzerPanels({ order, onRight }: { order: DemoTeam[]; onRight: () => void }) {
-  const [turn, setTurn] = useState(0);
+function BuzzerPanels({ buzzer, onReveal, busy }: { buzzer: BuzzerState; onReveal: () => void; busy: boolean }) {
+  const { order, turn, missed, solving, secondsLeft, picked } = buzzer;
   const current = order[turn];
-  const next = order[turn + 1];
+  const next = turn >= 0 ? order[turn + 1] : undefined;
+  const status = (i: number) => (i < missed ? "missed" : i === turn ? "answering" : "waiting");
   return (
     <>
       <div className={`${panel} left-10 top-[130px] w-[290px] gap-2 px-4 py-4`}>
         <p className="text-xl font-extrabold">Team buzz-in order</p>
+        {order.length === 0 && <p className="text-base text-body">Teams are solving the flag puzzle…</p>}
         <ol className="flex flex-col gap-1.5">
           {order.map(({ team }, i) => (
             <li
               key={team.id}
               className={`flex items-center gap-2 rounded-xl border-2 px-2 py-1.5 text-base font-bold leading-tight ${
                 i === turn ? "border-ink bg-[#FFF1C2]" : "border-transparent"
-              } ${i < turn ? "opacity-45" : ""}`}
+              } ${i < missed ? "opacity-45" : ""}`}
             >
               <span
                 className="flex size-[30px] shrink-0 items-center justify-center rounded-full text-base font-extrabold"
@@ -159,26 +226,46 @@ function BuzzerPanels({ order, onRight }: { order: DemoTeam[]; onRight: () => vo
                 {i + 1}
               </span>
               <span className="grow">{team.name}</span>
-              <span className="text-[13px] font-semibold">{i < turn ? "missed" : i === turn ? "answering" : "waiting"}</span>
+              <span className="text-[13px] font-semibold">{status(i)}</span>
             </li>
           ))}
         </ol>
-        <p className="text-[15px] text-body">1 team still solving the flag puzzle</p>
+        {solving > 0 && (
+          <p className="text-[15px] text-body">
+            {solving} {solving === 1 ? "team" : "teams"} still solving the flag puzzle
+          </p>
+        )}
       </div>
       <div className={`${panel} right-10 top-[130px] w-[240px] items-center gap-2.5 px-[18px] py-4`}>
-        <p className="text-center text-lg font-extrabold">{current.team.name} — answering now</p>
-        <TimerRing value={7} label="7 seconds to answer" size={88} />
-        <p className="text-[15px] text-body">seconds to answer</p>
+        {current ? (
+          <>
+            <p className="text-center text-lg font-extrabold">{current.team.name} — answering now</p>
+            {secondsLeft !== null && (
+              <TimerRing value={secondsLeft} label={secondsLeft > 0 ? `${secondsLeft} seconds to answer` : "Time's up"} size={88} />
+            )}
+            <p className="text-center text-[15px] text-body">{picked ? `Picked ${picked}` : secondsLeft === 0 ? "Time's up" : "seconds to answer"}</p>
+          </>
+        ) : (
+          <p className="text-center text-lg font-extrabold">{order.length ? "Every buzzed team has tried" : "Waiting for the first buzz"}</p>
+        )}
         <p className="self-start text-[13px] font-extrabold tracking-[1px]">HOST CONTROLS</p>
-        <button type="button" onClick={onRight} className="min-h-11 w-full cursor-pointer rounded-xl border-0 bg-flag-green-dark text-base font-extrabold text-white">
-          Right → reveal
-        </button>
+        {current && (
+          <button
+            type="button"
+            onClick={onReveal}
+            disabled={busy}
+            className="min-h-11 w-full cursor-pointer rounded-xl border-0 bg-flag-green-dark text-base font-extrabold text-white disabled:opacity-60"
+          >
+            Right → reveal
+          </button>
+        )}
         <button
           type="button"
-          onClick={() => (next ? setTurn(turn + 1) : onRight())}
-          className="min-h-11 w-full cursor-pointer rounded-xl border-2 border-ink bg-white text-base font-bold"
+          onClick={current ? buzzer.onWrong : onReveal}
+          disabled={busy}
+          className="min-h-11 w-full cursor-pointer rounded-xl border-2 border-ink bg-white text-base font-bold disabled:opacity-60"
         >
-          {next ? `Wrong → next: ${next.team.name}` : "Wrong → reveal answer"}
+          {!current ? "Reveal answer" : next ? `Wrong → next: ${next.team.name}` : "Wrong → next team to buzz"}
         </button>
       </div>
     </>

@@ -7,26 +7,26 @@ import { Eyebrow } from "./parts";
 
 interface PlayerSuppliesProps {
   team: Team;
-  nextQuestion: string;
+  /** The team's shared pack: every teammate's phone shows and edits the same list. */
+  picked: SupplyId[];
+  locked: boolean;
+  onToggle: (id: SupplyId) => void;
+  onLock: (locked: boolean) => void;
+  /** Shown if the server turned a change down. */
+  error?: string | null;
+  busy?: boolean;
+  nextQuestion?: string;
 }
 
 /** Checkpoint 1: pack your team's supplies (design-reference/Phone-Supplies.dc.html). */
-export function PlayerSupplies({ team, nextQuestion }: PlayerSuppliesProps) {
-  const [picked, setPicked] = useState<SupplyId[]>(["map", "radio", "food"]);
-  const [locked, setLocked] = useState(false);
+export function PlayerSupplies({ team, picked, locked, onToggle, onLock, error, busy = false, nextQuestion }: PlayerSuppliesProps) {
   const [msg, setMsg] = useState("");
   const spent = suppliesCost(picked);
 
   function toggle(id: SupplyId, cost: number) {
-    if (picked.includes(id)) {
-      setPicked(picked.filter((p) => p !== id));
-      setMsg("");
-    } else if (spent + cost > SUPPLY_BUDGET) {
-      setMsg("Not enough points. Drop something first.");
-    } else {
-      setPicked([...picked, id]);
-      setMsg("");
-    }
+    if (!picked.includes(id) && spent + cost > SUPPLY_BUDGET) return setMsg("Not enough points. Drop something first.");
+    setMsg("");
+    onToggle(id);
   }
 
   return (
@@ -58,6 +58,7 @@ export function PlayerSupplies({ team, nextQuestion }: PlayerSuppliesProps) {
 
       {!locked ? (
         <>
+          <p className="text-[15px] text-body">Your whole team shares this pack. Talk it over, then one phone locks it in.</p>
           <div className="flex flex-col gap-2">
             {SUPPLIES.map((s) => {
               const on = picked.includes(s.id);
@@ -66,6 +67,7 @@ export function PlayerSupplies({ team, nextQuestion }: PlayerSuppliesProps) {
                   key={s.id}
                   type="button"
                   aria-pressed={on}
+                  disabled={busy}
                   onClick={() => toggle(s.id, s.cost)}
                   className={`flex min-h-[58px] cursor-pointer items-center gap-3 rounded-[14px] px-3 py-1.5 text-ink ${
                     on ? "border-[3px] border-ink bg-white" : "border-2 border-quiet bg-[#FBFAF6]"
@@ -92,12 +94,13 @@ export function PlayerSupplies({ team, nextQuestion }: PlayerSuppliesProps) {
             })}
           </div>
           <p role="alert" className="min-h-5 text-sm font-bold text-danger">
-            {msg}
+            {msg || error}
           </p>
           <button
             type="button"
-            onClick={() => setLocked(true)}
-            className="mt-auto min-h-14 cursor-pointer rounded-2xl border-0 bg-flag-red text-[21px] font-extrabold text-white"
+            onClick={() => onLock(true)}
+            disabled={busy}
+            className="mt-auto min-h-14 cursor-pointer rounded-2xl border-0 bg-flag-red text-[21px] font-extrabold text-white disabled:opacity-60"
           >
             Lock in our supplies
           </button>
@@ -107,16 +110,24 @@ export function PlayerSupplies({ team, nextQuestion }: PlayerSuppliesProps) {
           <div role="status" className="flex flex-col gap-1.5 rounded-[18px] border-[3px] border-ink bg-success-bg p-[18px]">
             <p className="text-[28px] font-extrabold leading-[1.05]">Packed and ready!</p>
             <p className="text-base leading-snug">
-              {picked.map((id) => SUPPLIES.find((s) => s.id === id)!.name).join(" · ") || "Nothing packed yet"}
+              {picked.map((id) => SUPPLIES.find((s) => s.id === id)!.name).join(" · ") || "Nothing packed"}
             </p>
             <p className="text-[15px] text-body">Your supplies can help at later checkpoints, so watch for the Storm Zone.</p>
           </div>
-          <p className="rounded-2xl bg-ink px-4 py-3.5 text-lg font-bold leading-snug text-cream">
-            Next on the big screen: &ldquo;{nextQuestion}&rdquo;
-          </p>
+          {nextQuestion && (
+            <p className="rounded-2xl bg-ink px-4 py-3.5 text-lg font-bold leading-snug text-cream">
+              Next on the big screen: &ldquo;{nextQuestion}&rdquo;
+            </p>
+          )}
+          {error && (
+            <p role="alert" className="text-sm font-bold text-danger">
+              {error}
+            </p>
+          )}
           <button
             type="button"
-            onClick={() => setLocked(false)}
+            onClick={() => onLock(false)}
+            disabled={busy}
             className="mt-auto min-h-[46px] cursor-pointer rounded-[14px] border-2 border-ink bg-white text-base font-bold"
           >
             Change supplies

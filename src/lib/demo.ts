@@ -75,5 +75,4 @@ export const DEBRIEF_QUESTIONS = [
   "What’s one step you can take this week to get ready to vote?",
 ];
 
-/** Teams sorted by points, highest first. */
-export const ranked = (teams: DemoTeam[]) => [...teams].sort((a, b) => b.points - a.points);
+export { ranked } from "./stage";

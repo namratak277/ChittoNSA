@@ -1,16 +1,19 @@
 import { TimerRing } from "@/components/ui/TimerRing";
 import { BRAND, FLAG, INK } from "@/lib/colors";
-import type { DemoTeam } from "@/lib/demo";
 import { SUPPLIES, SUPPLY_BUDGET } from "@/lib/supplies";
+import type { Team } from "@/lib/teams";
 
 interface HostSuppliesProps {
-  teams: DemoTeam[];
+  teams: { team: Team; supplySpent: number; packed: boolean }[];
   timeLeft: string;
+  /** The first question, shown as what comes next. */
+  nextQuestion?: string;
   onClose: () => void;
+  busy?: boolean;
 }
 
 /** Checkpoint 1: Build your expedition (design-reference/Host-Supplies.dc.html). */
-export function HostSupplies({ teams, timeLeft, onClose }: HostSuppliesProps) {
+export function HostSupplies({ teams, timeLeft, nextQuestion = "Before Election Day, what should you check first?", onClose, busy = false }: HostSuppliesProps) {
   return (
     <>
       <svg width="1280" height="720" viewBox="0 0 1280 720" aria-hidden className="absolute inset-0">
@@ -52,8 +55,8 @@ export function HostSupplies({ teams, timeLeft, onClose }: HostSuppliesProps) {
 
       <div className="absolute left-14 top-[452px] flex w-160 flex-col gap-1 rounded-2xl bg-ink px-[18px] py-3.5 text-cream">
         <p className="text-sm font-extrabold tracking-[1px] text-marigold">THEN · BASE CAMP QUESTION</p>
-        <p className="text-[22px] font-extrabold leading-tight">Before Election Day, what should you check first?</p>
-        <p className="text-[15px] text-[#D9D6E4]">Teams that packed well and answer right earn a +5 supply token.</p>
+        <p className="text-[22px] font-extrabold leading-tight">{nextQuestion}</p>
+        <p className="text-[15px] text-[#D9D6E4]">Teams that packed well (8+ points used) and answer right earn a +5 supply token.</p>
       </div>
 
       <div className="absolute right-12 top-9 flex w-[470px] flex-col gap-3.5">
@@ -88,7 +91,8 @@ export function HostSupplies({ teams, timeLeft, onClose }: HostSuppliesProps) {
         <button
           type="button"
           onClick={onClose}
-          className="min-h-14 cursor-pointer rounded-2xl border-0 bg-flag-red text-[21px] font-extrabold text-white"
+          disabled={busy}
+          className="min-h-14 cursor-pointer rounded-2xl border-0 bg-flag-red text-[21px] font-extrabold text-white disabled:opacity-60"
         >
           Close shop → Base Camp question
         </button>

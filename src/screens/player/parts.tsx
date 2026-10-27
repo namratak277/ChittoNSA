@@ -1,4 +1,35 @@
 import { CHECKPOINTS } from "@/lib/checkpoints";
+import { LOCAL, NC_VOTING_LINKS, OFFICIAL_LINKS } from "@/lib/settings";
+
+const linkClass = "flex min-h-12 items-center justify-between gap-2 rounded-[14px] border-[3px] border-flag-blue bg-white px-4 text-[17px] font-extrabold text-flag-blue no-underline";
+
+/** Official voting tools only: NC State Board of Elections for every NC county, vote.gov for other states. */
+export function VotingLinks({ limit = NC_VOTING_LINKS.length }: { limit?: number }) {
+  return (
+    <section aria-label="Official voting info" className="flex flex-col gap-2">
+      <p className="text-base font-extrabold">
+        Voting in North Carolina <span className="font-medium text-body">(in {LOCAL.city}, that&apos;s {LOCAL.county})</span>
+      </p>
+      <ul className="flex flex-col gap-2">
+        {NC_VOTING_LINKS.slice(0, limit).map((l) => (
+          <li key={l.href}>
+            <a href={l.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+              {l.label}
+              <span className="text-sm font-bold">ncsbe.gov ↗</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="text-[15px] leading-snug text-body">
+        Registered in another state?{" "}
+        <a href={OFFICIAL_LINKS.voteGov.href} target="_blank" rel="noopener noreferrer" className="font-bold text-flag-blue">
+          vote.gov
+        </a>{" "}
+        has every state&apos;s official info.
+      </p>
+    </section>
+  );
+}
 
 const SHORT_NAMES = ["Base Camp", "Route", "Storm Zone", "Final Ascent", "Summit"];
 
@@ -44,10 +75,10 @@ export function ResultCard({ correct, headline, subline }: { correct: boolean; h
   );
 }
 
-export function TrailFact({ children }: { children: React.ReactNode }) {
+export function TrailFact({ title = "TRAIL FACT", children }: { title?: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5 rounded-[18px] border-[3px] border-ink bg-white p-[18px]">
-      <p className="text-sm font-bold tracking-[1px] text-flag-red">TRAIL FACT</p>
+      <p className="text-sm font-bold tracking-[1px] text-flag-red">{title}</p>
       <p className="text-lg leading-snug">{children}</p>
     </div>
   );

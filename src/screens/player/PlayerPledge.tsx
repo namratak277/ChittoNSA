@@ -1,12 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { OFFICIAL_LINKS } from "@/lib/settings";
-import { Eyebrow } from "./parts";
+import { useEffect, useRef, useState } from "react";
+import { useSettings } from "@/lib/useSettings";
+import { Eyebrow, VotingLinks } from "./parts";
 
 const WHEN = ["Early voting", "Election Day", "By mail"] as const;
 const CHECKS = ["I'm registered at my current address", "What ID or documents I need", "My polling place and its hours"] as const;
-const WHERE = ["My state election board website", "vote.gov", "My county board of elections"] as const;
+const WHERE = ["ncsbe.gov (NC State Board of Elections)", "Guilford County Board of Elections", "My own county's board of elections", "vote.gov (I vote in another state)"] as const;
+
+// The plan lives only in this phone's storage. The server only ever hears that a plan was made.
+const PLAN_KEY = "chhito:voting-plan";
+
+interface Plan {
+  when: number;
+  how: string;
+  checks: boolean[];
+  where: string;
+}
+
+function readPlan(): Plan | null {
+  try {
+    return typeof localStorage === "undefined" ? null : JSON.parse(localStorage.getItem(PLAN_KEY) ?? "null");
+  } catch {
+    return null;
+  }
+}
 
 interface PlayerPledgeProps {
   /** Called once when the plan is first saved. Only this fact is sent to the server, never the plan. */
@@ -18,20 +36,36 @@ interface PlayerPledgeProps {
  * it never asks who anyone votes for.
  */
 export function PlayerPledge({ onPlanMade }: PlayerPledgeProps) {
-  const [when, setWhen] = useState(0);
-  const [how, setHow] = useState("");
-  const [checks, setChecks] = useState([true, false, false]);
-  const [where, setWhere] = useState<string>(WHERE[0]);
-  const [saved, setSaved] = useState(false);
-  const [counted, setCounted] = useState(false);
+  const settings = useSettings();
+  // Only shown in the browser, after the game reaches the summit, so storage can be read straight away.
+  const [stored] = useState(readPlan);
+  const [when, setWhen] = useState(stored?.when ?? 0);
+  const [how, setHow] = useState(stored?.how ?? "");
+  const [checks, setChecks] = useState(stored?.checks ?? [true, false, false]);
+  const [where, setWhere] = useState<string>(stored?.where ?? WHERE[0]);
+  const [saved, setSaved] = useState(stored !== null);
+  const counted = useRef(false);
+
+  const count = () => {
+    if (counted.current) return;
+    counted.current = true;
+    onPlanMade();
+  };
+
+  // A plan saved earlier on this phone counts too (the server counts each player once).
+  useEffect(() => {
+    if (stored) count();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function save(e: React.FormEvent) {
     e.preventDefault();
-    setSaved(true);
-    if (!counted) {
-      setCounted(true);
-      onPlanMade();
+    try {
+      localStorage.setItem(PLAN_KEY, JSON.stringify({ when, how, checks, where } satisfies Plan));
+    } catch {
+      // Storage blocked: the plan shows now but won't be here next time. A screenshot still works.
     }
+    setSaved(true);
+    count();
   }
 
   return (
@@ -124,19 +158,12 @@ export function PlayerPledge({ onPlanMade }: PlayerPledgeProps) {
               <br />
               Updates from: <b>{where}</b>
             </p>
-            <p className="text-[15px] text-[#3A3550]">Take a screenshot so you have it on Election Day.</p>
+            <p className="text-[15px] text-[#3A3550]">
+              Election Day: <b>{settings.electionDate}</b> · Register by: <b>{settings.registrationDeadline}</b>
+            </p>
+            <p className="text-[15px] text-[#3A3550]">Saved on this phone only. Take a screenshot so you have it on Election Day.</p>
           </div>
-          {[OFFICIAL_LINKS.voteGov, OFFICIAL_LINKS.ncsbe].map((l, i) => (
-            <a
-              key={l.href}
-              href={l.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-[52px] items-center justify-center rounded-[14px] border-[3px] border-flag-blue text-lg font-extrabold text-flag-blue no-underline"
-            >
-              {i === 0 ? "Check registration" : "NC voting info"} · {l.label}
-            </a>
-          ))}
+          <VotingLinks />
           <button
             type="button"
             onClick={() => setSaved(false)}

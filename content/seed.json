@@ -1,12 +1,12 @@
 {
-  "_note": "Sample content from the design-reference mockups. Final questions are still being written. Never put real election dates here; keep the [PLACEHOLDERS] for the host to fill in.",
+  "_note": "Starting content for new games (edit it in the question builder). Never put real election dates here; keep the [PLACEHOLDERS] for the host to fill in. Voting content is only about how to prepare to vote, never who to vote for.",
   "placeholders": {
-    "CLUB NAME": "[CLUB NAME]",
+    "CLUB NAME": "UNCG Nepalese Student Association",
     "GAME URL": "[GAME URL]",
     "PRIZE": "[PRIZE]",
     "NC REGISTRATION DEADLINE": "[NC REGISTRATION DEADLINE]",
     "ELECTION DATE": "[ELECTION DATE]",
-    "CLUB INSTAGRAM": "[CLUB INSTAGRAM]",
+    "CLUB INSTAGRAM": "@uncgnsa",
     "TEAM 6 NAME": "[TEAM 6 NAME]"
   },
   "game": {
@@ -20,16 +20,36 @@
       "type": "multiple_choice",
       "topic": "voting",
       "prompt": "Before Election Day, what should you check first?",
-      "options": null,
-      "correct_index": null,
-      "reveal_title": null,
-      "trail_fact": null,
-      "timer_seconds": 20,
-      "_todo": "Answer choices still being written."
+      "options": [
+        "My voter registration and address",
+        "Which momo place is open late",
+        "A friend's post about the election",
+        "What time polls close in another state"
+      ],
+      "correct_index": 0,
+      "reveal_title": "Check your registration first",
+      "trail_fact": "In North Carolina, look yourself up with the Voter Search on ncsbe.gov. Registered somewhere else? vote.gov has every state's info.",
+      "timer_seconds": 20
     },
     {
       "checkpoint": 2,
       "order": 1,
+      "type": "info_cards",
+      "topic": "voting",
+      "prompt": "Your team wants to vote early in Greensboro. Which source do you trust for sites and hours?",
+      "options": [
+        "The Early Voting Site Search on ncsbe.gov",
+        "A flyer from last year's election",
+        "A post shared on social media"
+      ],
+      "correct_index": 0,
+      "reveal_title": "Trust the official source",
+      "trail_fact": "Early voting sites and hours can change every election. Check ncsbe.gov or your county board of elections (Guilford County for Greensboro).",
+      "timer_seconds": 20
+    },
+    {
+      "checkpoint": 2,
+      "order": 2,
       "type": "multiple_choice",
       "topic": "nepal",
       "prompt": "Dashain, Nepal's biggest festival, lasts how many days?",
@@ -38,14 +58,25 @@
       "reveal_title": "Dashain lasts 15 days",
       "trail_fact": "Families gather for Dashain, and elders give tika and blessings. It celebrates good winning over evil.",
       "timer_seconds": 20
+    },
+    {
+      "checkpoint": 4,
+      "order": 1,
+      "type": "final_scenario",
+      "topic": "voting",
+      "prompt": "One day left before the election. Explain your team's full plan: when you'll vote, how you'll get there, what you need to bring, and where you'll check for updates. Then give your backup plan.",
+      "options": [],
+      "correct_index": null,
+      "reveal_title": null,
+      "trail_fact": null,
+      "timer_seconds": 120
     }
   ],
   "storm_cards": [
     {
       "title": "Your planned trail is closed.",
       "body": "A rockslide blocked the route to the next camp, and the sun sets in four hours. What does your team do now?",
-      "helpful_supply": null,
-      "_todo": "Choose which supply (if any) earns a bonus on this card."
+      "helpful_supply": "map"
     }
   ]
 }

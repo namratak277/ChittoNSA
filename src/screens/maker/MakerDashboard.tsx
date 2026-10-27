@@ -20,6 +20,13 @@ const MODE_CHIP: Record<Mode, { label: string; bg: string }> = {
   buzzer: { label: "Buzzer mode", bg: "#FDE2E2" },
 };
 
+interface LastNight {
+  climbers: number;
+  plans: number;
+  rightPct: number | null;
+  winner: string;
+}
+
 const action = "flex min-h-11 grow items-center justify-center rounded-[10px] text-base no-underline";
 
 /** My games (design-reference/Maker-Dashboard.dc.html). */
@@ -32,6 +39,32 @@ function Dashboard({ maker }: { maker: Maker }) {
   const [games, setGames] = useState<GameCard[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [lastNight, setLastNight] = useState<LastNight | null>(null);
+
+  // Stats from the most recent game night that started. Sessions are readable by anyone with
+  // the PIN, so filter to this maker's own.
+  useEffect(() => {
+    const sb = getSupabase()!;
+    sb.from("sessions")
+      .select("id, voting_plans, teams(name, points, members)")
+      .eq("maker_id", maker.id)
+      .not("started_at", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (!data) return;
+        const teams = data.teams as { name: string; points: number; members: number }[];
+        const { data: answers } = await sb.from("answers").select("correct").eq("session_id", data.id);
+        const right = answers?.filter((a) => a.correct).length ?? 0;
+        setLastNight({
+          climbers: teams.reduce((n, t) => n + t.members, 0),
+          plans: data.voting_plans,
+          rightPct: answers?.length ? Math.round((right / answers.length) * 100) : null,
+          winner: [...teams].sort((a, b) => b.points - a.points)[0]?.name ?? "–",
+        });
+      });
+  }, [maker.id]);
 
   useEffect(() => {
     getSupabase()!
@@ -131,6 +164,26 @@ function Dashboard({ maker }: { maker: Maker }) {
             );
           })}
         </ul>
+      )}
+
+      {lastNight && (
+        <section aria-label="Last game night" className="flex flex-wrap items-center gap-x-10 gap-y-3 rounded-2xl border-2 border-ink bg-white px-[22px] py-[18px]">
+          <h2 className="text-xl font-extrabold">Last game night</h2>
+          <p className="text-[17px]">
+            <b className="text-[26px]">{lastNight.climbers}</b> climbers
+          </p>
+          <p className="text-[17px]">
+            <b className="text-[26px]">{lastNight.plans}</b> voting plans made
+          </p>
+          {lastNight.rightPct !== null && (
+            <p className="text-[17px]">
+              <b className="text-[26px]">{lastNight.rightPct}%</b> right answers
+            </p>
+          )}
+          <p className="text-[17px]">
+            Summit Champions: <b>{lastNight.winner}</b>
+          </p>
+        </section>
       )}
     </MakerSidebarShell>
   );

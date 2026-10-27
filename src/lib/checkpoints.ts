@@ -19,14 +19,15 @@ export const CHECKPOINTS: readonly Checkpoint[] = [
     name: "Base Camp",
     stop: { x: 440, y: 610 },
     label: { x: 424, y: 616 },
-    votingLesson: "Check your registration status and eligibility.",
+    votingLesson: "Check your registration status and eligibility. In NC, use the Voter Search on ncsbe.gov; for other states, vote.gov.",
   },
   {
     order: 2,
     name: "Route Checkpoint",
     stop: { x: 720, y: 555 },
     label: { x: 704, y: 561 },
-    votingLesson: "Know where to find official info on locations, hours and deadlines.",
+    votingLesson:
+      "Know where to find official info on locations, hours and deadlines: ncsbe.gov and your county board of elections (Guilford County for Greensboro).",
   },
   {
     order: 3,

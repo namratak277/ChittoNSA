@@ -1,8 +1,11 @@
 "use client";
 
+import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { PrayerFlagBunting } from "@/components/brand/PrayerFlagBunting";
 import { DEBRIEF_QUESTIONS } from "@/lib/demo";
+import { LOCAL, OFFICIAL_LINKS } from "@/lib/settings";
+import { useSettings } from "@/lib/useSettings";
 
 interface HostPledgeProps {
   plansMade: number;
@@ -12,6 +15,7 @@ interface HostPledgeProps {
 
 /** Checkpoint 5: From the summit to the ballot, with debrief (design-reference/Host-Pledge.dc.html). */
 export function HostPledge({ plansMade, climbers, onEnd }: HostPledgeProps) {
+  const settings = useSettings();
   const [q, setQ] = useState(0);
   const n = DEBRIEF_QUESTIONS.length;
   const pct = climbers ? Math.round((plansMade / climbers) * 100) : 0;
@@ -77,12 +81,18 @@ export function HostPledge({ plansMade, climbers, onEnd }: HostPledgeProps) {
         <p className="border-t-2 border-dashed border-rule pt-1.5 text-base leading-relaxed">
           Official info, always:
           <br />
-          <b>vote.gov</b> (registration)
+          <b>ncsbe.gov</b> (NC registration, polling places, early voting; {LOCAL.city} votes in {LOCAL.county})
           <br />
-          <b>ncsbe.gov</b> (NC polling places, early voting, deadlines)
+          <b>vote.gov</b> (registered in another state)
         </p>
-        <div className="flex size-[130px] items-center justify-center self-center rounded-xl border-2 border-dashed border-[#8A86A0] text-center text-sm text-body">
-          [QR → official voting info]
+        <p className="text-base">
+          Election Day: <b>{settings.electionDate}</b>
+          <br />
+          Register by: <b>{settings.registrationDeadline}</b>
+        </p>
+        <div className="flex flex-col items-center gap-1 self-center">
+          <QRCodeSVG value={OFFICIAL_LINKS.ncsbeVoting.href} size={110} fgColor="#1E1B2E" title="Scan for NC voting info on ncsbe.gov" />
+          <span className="text-sm text-body">Scan for NC voting info · ncsbe.gov</span>
         </div>
         <button type="button" onClick={onEnd} className="min-h-12 cursor-pointer rounded-[14px] border-0 bg-flag-red text-lg font-extrabold text-white">
           End game · back to Base Camp
