@@ -8,6 +8,7 @@ export function getSupabase(): SupabaseClient | null {
   if (client !== undefined) return client;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  client = url && key ? createClient(url, key) : null;
+  // Only the project address is wanted; a pasted ".../rest/v1/" ending breaks sign-in.
+  client = url && key ? createClient(new URL(url).origin, key) : null;
   return client;
 }

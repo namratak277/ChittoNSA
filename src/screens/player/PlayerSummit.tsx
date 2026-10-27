@@ -1,7 +1,7 @@
-import { ClimberMarker, type ClimberStyle } from "@/components/climbers/ClimberMarker";
-import { FLAG, GLACIER, INK } from "@/lib/colors";
 "use client";
 
+import { ClimberMarker, type ClimberStyle } from "@/components/climbers/ClimberMarker";
+import { FLAG, GLACIER, INK } from "@/lib/colors";
 import { NC_VOTING_LINKS, OFFICIAL_LINKS } from "@/lib/settings";
 import type { Team } from "@/lib/teams";
 import { useSettings } from "@/lib/useSettings";

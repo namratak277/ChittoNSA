@@ -1,8 +1,8 @@
+"use client";
+
 import { ClimberMarker } from "@/components/climbers/ClimberMarker";
 import { Mountain } from "@/components/mountain/Mountain";
 import { FLAG } from "@/lib/colors";
-"use client";
-
 import { ranked, type StageTeam } from "@/lib/stage";
 import { useSettings } from "@/lib/useSettings";
 

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import seed from "../../../content/seed.json";
 import { FLAG } from "@/lib/colors";
 import { isWritten, seedContent, type GameRow, type Mode, type QuestionRow } from "@/lib/db";
 import { getSupabase } from "@/lib/supabase";
@@ -28,6 +29,19 @@ interface LastNight {
 }
 
 const action = "flex min-h-11 grow items-center justify-center rounded-[10px] text-base no-underline";
+
+const GAMES_SELECT = "id, title, default_mode, updated_at, questions(type, prompt, options, correct_index)";
+
+/** A game filled with the questions and storm card from /content/seed.json. Returns the new game's id. */
+async function createSeededGame(title: string, mode: Mode = "buttons") {
+  const sb = getSupabase()!;
+  const { data, error } = await sb.from("games").insert({ title, default_mode: mode }).select("id").single();
+  if (error) throw error;
+  const { questions, stormCards } = seedContent(data.id);
+  const [q, s] = await Promise.all([sb.from("questions").insert(questions), sb.from("storm_cards").insert(stormCards)]);
+  if (q.error || s.error) throw q.error ?? s.error;
+  return data.id as string;
+}
 
 /** My games (design-reference/Maker-Dashboard.dc.html). */
 export function MakerDashboard() {
@@ -66,31 +80,38 @@ function Dashboard({ maker }: { maker: Maker }) {
       });
   }, [maker.id]);
 
+  // First visit with no games: make the ready-to-play voting game so it can be hosted straight away.
+  // The ref stops React's double effect run in development from making two copies.
+  const autoMade = useRef(false);
   useEffect(() => {
-    getSupabase()!
-      .from("games")
-      .select("id, title, default_mode, updated_at, questions(type, prompt, options, correct_index)")
-      .order("updated_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) setError(error.message);
-        else setGames(data as GameCard[]);
-      });
+    const sb = getSupabase()!;
+    const load = () => sb.from("games").select(GAMES_SELECT).order("updated_at", { ascending: false });
+    load().then(async ({ data, error }) => {
+      if (error) return setError(error.message);
+      if (data.length === 0 && !autoMade.current) {
+        autoMade.current = true;
+        try {
+          await createSeededGame(seed.game.title, seed.game.default_mode as Mode);
+        } catch (e) {
+          return setError((e as Error).message);
+        }
+        const again = await load();
+        if (again.error) return setError(again.error.message);
+        return setGames(again.data as GameCard[]);
+      }
+      setGames(data as GameCard[]);
+    });
   }, []);
 
   async function newGame() {
-    const sb = getSupabase()!;
     setCreating(true);
     setError(null);
-    const { data, error } = await sb.from("games").insert({ title: "New game" }).select("id").single();
-    if (error) {
-      setError(error.message);
+    try {
+      router.push(`/maker/games/${await createSeededGame("New game")}`);
+    } catch (e) {
+      setError((e as Error).message);
       setCreating(false);
-      return;
     }
-    const { questions, stormCards } = seedContent(data.id);
-    const [q, s] = await Promise.all([sb.from("questions").insert(questions), sb.from("storm_cards").insert(stormCards)]);
-    if (q.error || s.error) setError((q.error ?? s.error)!.message);
-    router.push(`/maker/games/${data.id}`);
   }
 
   return (
@@ -120,12 +141,6 @@ function Dashboard({ maker }: { maker: Maker }) {
       )}
 
       {games === null && !error && <p className="text-body">Loading your games…</p>}
-
-      {games?.length === 0 && (
-        <p className="rounded-2xl border-2 border-dashed border-[#8A86A0] bg-white px-6 py-8 text-center text-lg text-body">
-          No games yet. Press <b>New game</b> to start with the sample Dashain question and storm card.
-        </p>
-      )}
 
       {games && games.length > 0 && (
         <ul className="grid gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
